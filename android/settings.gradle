@@ -1,0 +1,3 @@
+rootProject.name = 'ComicHentai'
+
+include ':app'
