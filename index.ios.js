@@ -1,52 +1,60 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- */
-'use strict';
-import React, {
-  AppRegistry,
-  Component,
-  StyleSheet,
-  Text,
-  View
-} from 'react-native';
+var React = require('react-native');
+var Welcome = require('./welcome.ios.js');
+var More = require('./more.ios.js');
+var ComicList = require('./comicList.ios.js')
+var {
+    AppRegistry,
+    Component,
+    Image,
+    StyleSheet,
+    Text,
+    View,
+    TabBarIOS
+    } = React;
 
-class ComicHentai extends Component {
-  render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>
-          Welcome to React Native!
-        </Text>
-        <Text style={styles.instructions}>
-          To get started, edit index.ios.js
-        </Text>
-        <Text style={styles.instructions}>
-          Press Cmd+R to reload,{'\n'}
-          Cmd+D or shake for dev menu
-        </Text>
-      </View>
-    );
-  }
+function _icon(imageUri) {
+    return {
+        uri: imageUri,
+        isStatic: true
+    };
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
-  },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
-  },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
-});
 
+class ComicHentai extends Component {
+
+    //默认选择欢迎页
+    constructor(props) {
+        super(props);
+        this.state = {
+            selectedTab: 'comicList'
+        };
+    }
+
+    render() {
+        return (
+            <TabBarIOS selectedTab={this.state.selectedTab}>
+            <TabBarIOS.Item
+                selected={this.state.selectedTab === 'comicList'}
+                icon={_icon('favorites')}
+                title='首页'
+                onPress={() => { this.setState({ selectedTab: 'comicList', }); }}>
+                <ComicList/>
+            </TabBarIOS.Item>
+            <TabBarIOS.Item
+                selected={this.state.selectedTab === 'welcome'}
+                title='探索'
+                onPress={() => { this.setState({ selectedTab: 'welcome', }); }}>
+                <Welcome/>
+            </TabBarIOS.Item>
+            <TabBarIOS.Item
+                selected={this.state.selectedTab === 'more'}
+                title='我的'
+                onPress={() => { this.setState({ selectedTab: 'more', }); }}>
+                <More/>
+            </TabBarIOS.Item>
+        </TabBarIOS> );
+    }
+}
+
+//最后注册组件
 AppRegistry.registerComponent('ComicHentai', () => ComicHentai);
