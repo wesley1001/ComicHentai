@@ -31,7 +31,7 @@
    * on the same Wi-Fi network.
    */
 
-  jsCodeLocation = [NSURL URLWithString:@"http://www.hope6537.com:8081/ComicHentai.ios.bundle?platform=ios&dev=true"];
+  jsCodeLocation = [NSURL URLWithString:@"http://www.hope6537.com:8081/index.ios.bundle?platform=ios&dev=true"];
 
   /**
    * OPTION 2
