@@ -26,7 +26,7 @@ function _icon(imageUri) {
     };
 }
 
-class IndexTab extends Component{
+class IndexTab extends Component {
     //默认选择欢迎页
     constructor(props) {
         super(props);
@@ -34,6 +34,7 @@ class IndexTab extends Component{
             selectedTab: 'comicList'
         };
     }
+
     render() {
         return (
             <TabBarIOS selectedTab={this.state.selectedTab}>
@@ -62,7 +63,8 @@ class IndexTab extends Component{
                 </TabBarIOS.Item>
             </TabBarIOS> );
     }
-};
+}
+;
 
 var styles = StyleSheet.create({
     container: {
