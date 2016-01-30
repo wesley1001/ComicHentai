@@ -1,5 +1,6 @@
 /**
  * Created by hope6537 on 16/1/26.
+ * 探索页
  */
 'use strict';
 
@@ -25,16 +26,16 @@ var styles = StyleSheet.create({
     }
 });
 
-class More extends Component {
+class Explore extends Component {
     render() {
         return (
             <View style={styles.container}>
                 <Text style={styles.description}>
-                    This could be your second tab
+                    这是正在施工的探索页
                 </Text>
             </View>
         );
     }
 }
 
-module.exports = More;
+module.exports = Explore;

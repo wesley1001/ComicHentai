@@ -1,10 +1,10 @@
 /**
  * Created by hope6537 on 16/1/26.
+ * 用户页
  */
 'use strict';
 
 var React = require('react-native');
-var { Icon, } = require('react-native-icons');
 var {
     StyleSheet,
     View,
@@ -26,22 +26,16 @@ var styles = StyleSheet.create({
     }
 });
 
-class Welcome extends Component {
+class User extends Component {
     render() {
         return (
             <View style={styles.container}>
                 <Text style={styles.description}>
-                    Welcome to your React Native Start Component!
+                    这是正在施工的个人页
                 </Text>
-                <Icon
-                    name='ion|beer'
-                    size={150}
-                    color='#887700'
-                    style={styles.beer}
-                />
             </View>
         );
     }
 }
 
-module.exports = Welcome;
+module.exports = User;
