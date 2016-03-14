@@ -235,17 +235,17 @@ var ComicHentai =  React.createClass({
               <TabBarIOS.Item
                 title="探索"
                 icon={require('image!4')}
-                selected={this.state.selectedTab === 'message'}
-                onPress={this._selectTab.bind(this, 'message')}
+                selected={this.state.selectedTab === 'explore'}
+                onPress={this._selectTab.bind(this, 'explore')}
                 >
-                {this._addNavigator(Message, '探索')}
+                {this._addNavigator(Explore, '探索')}
               </TabBarIOS.Item>
 
               <TabBarIOS.Item
                 title="我的"
                 icon={require('image!1')}
-                selected={this.state.selectedTab === 'manager'}
-                onPress={this._selectTab.bind(this, 'manager')}
+                selected={this.state.selectedTab === 'user'}
+                onPress={this._selectTab.bind(this, 'user')}
                 >
                 {this._addNavigator(User, '我的')}
               </TabBarIOS.Item>
