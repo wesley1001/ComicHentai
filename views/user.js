@@ -16,7 +16,7 @@ var {
 } = React;
 
 
-var Manager = React.createClass({
+var User = React.createClass({
 
   render: function(){
     var colors = ['#F4000B', '#17B4FF', '#FFD900', '#F00000'];
@@ -96,4 +96,4 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = Manager;
+module.exports = User;

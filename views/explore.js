@@ -18,7 +18,7 @@ var {
   TouchableOpacity,
 } = React;
 
-var Message = React.createClass({
+var Explore = React.createClass({
   render: function(){
     var contents = [];
     var items = [];
@@ -69,4 +69,4 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = Message;
+module.exports = Explore;

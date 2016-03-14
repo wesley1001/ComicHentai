@@ -3,8 +3,8 @@ var React = require('react-native');
 var AdSupportIOS = require('AdSupportIOS');
 var Home = require('./views/home');
 var About = require('./views/about');
-var Manager = require('./views/manager');
-var Message = require('./views/message');
+var User = require('./views/user');
+var Explore = require('./views/explore');
 var Util = require('./views/util');
 var Service = require('./views/service');
 
@@ -247,7 +247,7 @@ var ComicHentai =  React.createClass({
                 selected={this.state.selectedTab === 'manager'}
                 onPress={this._selectTab.bind(this, 'manager')}
                 >
-                {this._addNavigator(Manager, '我的')}
+                {this._addNavigator(User, '我的')}
               </TabBarIOS.Item>
 
               <TabBarIOS.Item
