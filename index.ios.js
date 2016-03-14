@@ -31,7 +31,7 @@ var {
 //这是啥?状态栏?
 StatusBarIOS.setStyle('light-content')
 //添加
-var Address = React.createClass({
+var ComicHentai = React.createClass({
     statics: {
         //静态数据,标题
         title: '主页',
@@ -387,4 +387,5 @@ var styles = StyleSheet.create({
 });
 
 //注册组件作为主体
-AppRegistry.registerComponent('address_book', () => Address);
+AppRegistry.registerComponent('ComicHentai', () => ComicHentai);
+module.exports = ComicHentai;
