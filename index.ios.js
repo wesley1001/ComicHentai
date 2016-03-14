@@ -224,7 +224,7 @@ var ComicHentai =  React.createClass({
           <View style={this.state.showIndex}>
             <TabBarIOS barTintColor="#FFF">
               <TabBarIOS.Item
-                icon={require('image!phone_s')}
+                icon={require('image!29')}
                 title="首页"
                 selected={this.state.selectedTab === 'home'}
                 onPress={this._selectTab.bind(this, 'home')}
@@ -233,26 +233,26 @@ var ComicHentai =  React.createClass({
               </TabBarIOS.Item>
 
               <TabBarIOS.Item
-                title="公告"
-                icon={require('image!gonggao')}
+                title="探索"
+                icon={require('image!4')}
                 selected={this.state.selectedTab === 'message'}
                 onPress={this._selectTab.bind(this, 'message')}
                 >
-                {this._addNavigator(Message, '公告')}
+                {this._addNavigator(Message, '探索')}
               </TabBarIOS.Item>
 
               <TabBarIOS.Item
-                title="管理"
-                icon={require('image!manager')}
+                title="我的"
+                icon={require('image!1')}
                 selected={this.state.selectedTab === 'manager'}
                 onPress={this._selectTab.bind(this, 'manager')}
                 >
-                {this._addNavigator(Manager, '管理')}
+                {this._addNavigator(Manager, '我的')}
               </TabBarIOS.Item>
 
               <TabBarIOS.Item
                 title="关于"
-                icon={require('image!about')}
+                icon={require('image!62')}
                 selected={this.state.selectedTab === 'about'}
                 onPress={this._selectTab.bind(this, 'about')}
                 >
