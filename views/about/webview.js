@@ -4,22 +4,22 @@
 
 var React = require('react-native');
 var {
-  WebView,
-  ScrollView,
-  Text,
-  View,
-} = React;
+    WebView,
+    ScrollView,
+    Text,
+    View,
+    } = React;
 
 
 var webview = React.createClass({
 
-  render: function(){
-    return(
-      <View style={{flex:1}}>
-        <WebView url={this.props.url}/>
-      </View>
-    );
-  }
+    render: function () {
+        return (
+            <View style={{flex:1}}>
+                <WebView url={this.props.url}/>
+            </View>
+        );
+    }
 
 });
 
