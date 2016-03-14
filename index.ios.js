@@ -27,7 +27,7 @@ var {
 
 
 StatusBarIOS.setStyle('light-content');
-var Address =  React.createClass({
+var ComicHentai =  React.createClass({
   statics: {
     title: '主页',
     description: '选项卡'
@@ -324,4 +324,4 @@ var styles = StyleSheet.create({
   }
 });
 
-AppRegistry.registerComponent('address_book', () => Address);
+AppRegistry.registerComponent('ComicHentai', () => ComicHentai);
