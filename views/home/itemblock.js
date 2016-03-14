@@ -44,7 +44,7 @@ var ItemBlock = React.createClass({
       partment : partment
     }, function(data){
       nav.push({
-        title: this.props.tag,
+        title: "人员信息",
         component: Address,
         passProps:{
           data: data

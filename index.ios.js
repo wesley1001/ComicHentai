@@ -105,7 +105,7 @@ var ComicHentai =  React.createClass({
 
   _addNavigator: function(component, title){
     var data = null;
-    if(title === '公告'){
+    if(title === '探索'){
       data = this.state.data;
     }
     return <NavigatorIOS
@@ -291,6 +291,7 @@ var ComicHentai =  React.createClass({
 var styles = StyleSheet.create({
   container:{
     marginTop:50,
+    marginBottom:150,
     alignItems:'center',
   },
   logo:{

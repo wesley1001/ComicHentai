@@ -23,16 +23,12 @@ var About = React.createClass({
 
         <View style={styles.wrapper}>
           <Image style={styles.avatar} source={require('image!me_1')}></Image>
-          <Text style={{fontSize:14, marginTop:10, color:'#ABABAB'}}>Author: vczero</Text>
+          <Text style={{fontSize:14, marginTop:10, color:'#ABABAB'}}>Author: hope6537</Text>
           <Text style={{fontSize:14, marginBottom:20, color:'#ABABAB'}}>Version: v0.0.1</Text>
 
           <View style={{flexDirection:'row'}}>
-            <TouchableOpacity onPress={this._openWebView.bind(this, 'https://github.com/vczero/React-Native-App')}>
+            <TouchableOpacity onPress={this._openWebView.bind(this, 'https://github.com/ComicHentai/ComicHentai')}>
               <Image style={styles.img} source={require('image!github')}/>
-            </TouchableOpacity>
-
-            <TouchableOpacity onPress={this._openWebView.bind(this, 'http://weibo.com/vczero')}>
-              <Image style={[styles.img, {width:25,height:25}]} source={require('image!weibo')}/>
             </TouchableOpacity>
           </View>
         </View>
