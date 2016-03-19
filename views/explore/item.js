@@ -37,7 +37,7 @@ var Item = React.createClass({
         var nav = this.props.nav;
         var key = Util.key;
         var title = this.props.title;
-        var path = Service.host + Service.getUser;
+        var path = Service.host + Service.getUserSpecial;
         //跳转到Detail页
         Util.post(path, {
             key: key,
