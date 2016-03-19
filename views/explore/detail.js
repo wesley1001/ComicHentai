@@ -28,10 +28,10 @@ var Detail = React.createClass({
         };
         //i中的每个元素都是一个专题的具体信息,一个专题内部会有多个漫画
         for (var i in items) {
-            var comicList = i.comic;
+            var comicList = items[i].comic;
             for (var comicIndex in comicList) {
                 view.push(
-                    <View key={'addressItem' + i} style={styles.row}>
+                    <View key={'comic' + comicIndex} style={styles.row}>
                         <View style={[styles.text, color]}>
                             <Text style={{fontSize:25, color:'#fff', fontWeight:'bold'}}>
                                 {comicList[comicIndex].comicTitle.substr(0, 1) || '未'}
@@ -47,13 +47,13 @@ var Detail = React.createClass({
                         </View>
                         <View style={{flex:1}}>
                             <TouchableHighlight underlayColor="#fff"
-                                                onPress={this.showActionSheet.bind(this, comicList[comicIndex].tel, comicList[comicIndex].email, comicList[comicIndex].username)}>
+                                                onPress={this.showActionSheet.bind(this, comicList[comicIndex].author, comicList[comicIndex].author, comicList[comicIndex].author)}>
                                 <Text style={styles.link}>
                                     {comicList[comicIndex].updatedContent}
                                 </Text>
                             </TouchableHighlight>
                             <TouchableHighlight underlayColor="#fff"
-                                                onPress={this.showActionSheet.bind(this, comicList[comicIndex].tel, comicList[comicIndex].email, comicList[comicIndex].username)}>
+                                                onPress={this.showActionSheet.bind(this, comicList[comicIndex].author, comicList[comicIndex].author, comicList[comicIndex].author)}>
                                 <Text style={styles.link}>
                                     {comicList[comicIndex].status ? "已完结" : "未完结"}
                                 </Text>

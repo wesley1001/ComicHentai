@@ -1,22 +1,10 @@
 [
   {
-    "userid": "591F68A5-87E6-4A6C-810F-5A50953AE747",
-    "title": "专题1",
-    "username": "宋江",
-    "password": "19bdec7440acd44c669240ed534fc2f6",
-    "partment": "框架研发",
-    "tel": "19008097890",
-    "email": "test0@126.com",
-    "tag": "研发",
-    "creater": "wlh",
-    "token": "AE0218C4-21F2-4846-9767-28CE3C5D9579C34C0B51-3A68-4297-9C7E-A851B136D34F"
-  },
-  {
     "title": "专题1",
     "comic": [
       {
         "comicId": "1",
-        "comicTitle": "银魂",,
+        "comicTitle": "银魂",
         "author": "空知英秋",
         "updatedContent": "第65535章:突入最终回!",
         "status": "false"

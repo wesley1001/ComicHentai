@@ -72,11 +72,11 @@ var User = {
                     var obj = JSON.parse(data);
                     var newObj = [];
                     for (var i in obj) {
-                        console.log(obj[i]);
                         if (obj[i].title === title) {
                             newObj.push(obj[i]);
                         }
                     }
+                    console.log(newObj);
                     return res.send({
                         status: 1,
                         data: newObj
