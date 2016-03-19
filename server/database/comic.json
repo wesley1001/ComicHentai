@@ -1,0 +1,33 @@
+{
+  "comicList": [
+    {
+      "comicId": "1",
+      "comicTitle": "银魂",
+      "author": "空知英秋",
+      "updatedContent": "第65535章:突入最终回!",
+      "status": "false"
+    },
+    {
+      "comicId": "2",
+      "comicTitle": "金魂",
+      "author": "空知英秋",
+      "updatedContent": "第256章:屁股下巴之男",
+      "status": "false"
+    },
+    {
+      "comicId": "3",
+      "comicTitle": "火影忍者",
+      "author": "岸本齐史",
+      "updatedContent": "第65535章:四代目",
+      "status": "false"
+    },
+    {
+      "comicId": "4",
+      "comicTitle": "美食的俘虏",
+      "author": "带刀光年",
+      "updatedContent": "第65535章:哆哆哆哆哆",
+      "status": "true"
+    }
+  ]
+}
+
