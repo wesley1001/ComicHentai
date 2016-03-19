@@ -1,71 +1,116 @@
 /**
+ * Created by hope6537 on 16/3/19.
+ */
+/**
  * Created by vczero on 15/7/12.
  */
 
 var React = require('react-native');
 var Util = require('./util');
-var Item = require('./message/item');
-var Detail = require('./message/detail');
-var Service = require('./service');
+var Item = require('./explore/item');
 
 var {
     View,
     Text,
     ScrollView,
     StyleSheet,
-    TextInput,
-    Image,
-    TouchableOpacity,
+    TouchableHighlight,
     } = React;
 
 var Explore = React.createClass({
+    getInitialState: function () {
+        //减去paddingLeft && paddingRight && space
+        var width = Math.floor(((Util.size.width - 20) - 50) / 4);
+        var items = [
+            {
+                id: 1,
+                title: '专题1',
+                color: '#126AFF',
+            },
+            {
+                id: 2,
+                title: '专题2',
+                color: '#FFD600',
+            },
+            {
+                id: 3,
+                title: '专题3',
+                color: '#F80728',
+            },
+            {
+                id: 4,
+                title: '专题4',
+                color: '#05C147',
+            },
+            {
+                id: 5,
+                title: '专题5',
+                color: '#FF4EB9',
+            },
+            {
+                id: 6,
+                title: '专题6',
+                color: '#EE810D',
+            }
+        ];
+
+        return {
+            items: items,
+            width: width
+        };
+    },
+
     render: function () {
-        var contents = [];
-        var items = [];
-        if (this.props.data.status) {
-            contents = this.props.data.data;
-        }
-        for (var i = 0; i < contents.length; i++) {
-            items.push(
+        var Items1 = [];
+        var Items2 = [];
+        var items = this.state.items;
+
+        for (var i = 0; i < 4; i++) {
+            Items1.push(
                 <Item
-                    data={contents[i]}
+                    key={items[i].id}
+                    title={items[i].title}
+                    width={this.state.width}
+                    color={items[i].color}
                     nav={this.props.navigator}
-                    component={Detail}
-                    key={contents[i].messageid}
-                    text={contents[i].message}
-                    name={contents[i].username}
-                    date={contents[i].time}/>
+                />
+            );
+        }
+
+        for (var i = 4; i < items.length; i++) {
+            Items2.push(
+                <Item
+                    key={items[i].id}
+                    title={items[i].title}
+                    width={this.state.width}
+                    color={items[i].color}
+                    nav={this.props.navigator}
+                />
             );
         }
 
         return (
             <ScrollView style={styles.container}>
-                <View style={{height:50,padding:7,}}>
-                    <TextInput style={styles.search} placeholder="搜索"/>
+                <View style={styles.itemRow}>
+                    {Items1}
                 </View>
-                <View style={{backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
-                    {items}
-                    <View style={{height:35}}></View>
+                <View style={styles.itemRow}>
+                    {Items2}
                 </View>
+
             </ScrollView>
         );
     }
-
 });
 
 var styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F5F5F5',
-        flexDirection: 'column'
+        padding: 10,
     },
-    search: {
-        height: 35,
-        borderWidth: Util.pixel,
-        borderColor: '#ccc',
-        paddingLeft: 10,
-        borderRadius: 6,
-        backgroundColor: '#fff',
+    itemRow: {
+        flexDirection: 'row',
+        marginBottom: 20,
     }
 });
 

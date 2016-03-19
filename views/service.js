@@ -1,5 +1,5 @@
 var Service = {
-    host: 'http://www.hope6537.com:3000',
+    host: 'http://ding.hope6537.com:3000',
     login: '/user/login',
     loginByToken: '/user/login/token',
     getUser: '/user/get',
