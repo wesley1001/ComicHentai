@@ -31,6 +31,7 @@ var User = {
                     var obj = JSON.parse(data);
                     var newObj = [];
                     for (var i in obj) {
+                        console.log(obj[i]);
                         if (obj[i].partment === partment) {
                             delete obj[i]['password'];
                             newObj.push(obj[i]);
