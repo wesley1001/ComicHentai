@@ -1,7 +1,7 @@
 var fs = require('fs');
 var util = require('./../util');
 var USER_PATH = './database/user.json';
-var SPECAIL_PATH = './database/special.json'
+var SPECIAL_JSON = './database/special.json';
 
 var User = {
 
@@ -65,12 +65,13 @@ var User = {
                 data: '使用了没有鉴权的key'
             });
         }
-        fs.readFile(SPECAIL_PATH, function (err, data) {
+        fs.readFile(SPECIAL_JSON, function (err, data) {
             if (!err) {
                 try {
                     var obj = JSON.parse(data);
                     var newObj = [];
                     for (var i in obj) {
+                        console.log(obj[i]);
                         if (obj[i].title === title) {
                             newObj.push(obj[i]);
                         }
