@@ -269,11 +269,11 @@ var ComicHentai = React.createClass({
 
                         <View style={styles.inputRow}>
                             <Text>邮箱</Text><TextInput style={styles.input} placeholder="请输入邮箱"
-                                                      onChangeText={this._getEmail}/>
+                                                      onChangeText={this._getEmail}>test0@126.com</TextInput>
                         </View>
                         <View style={styles.inputRow}>
                             <Text>密码</Text><TextInput style={styles.input} placeholder="请输入密码" password={true}
-                                                      onChangeText={this._getPassword}/>
+                                                      onChangeText={this._getPassword}>123</TextInput>
                         </View>
 
                         <View>
