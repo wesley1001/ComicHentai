@@ -26,38 +26,42 @@ var Detail = React.createClass({
         var color = {
             backgroundColor: colors[parseInt(Math.random() * 7)]
         };
+        //i中的每个元素都是一个专题的具体信息,一个专题内部会有多个漫画
         for (var i in items) {
-            view.push(
-                <View key={'addressItem' + i} style={styles.row}>
-                    <View style={[styles.text, color]}>
-                        <Text style={{fontSize:25, color:'#fff', fontWeight:'bold'}}>
-                            {items[i].username.substr(0, 1) || '未'}
-                        </Text>
-                    </View>
-                    <View style={styles.part}>
-                        <Text>
-                            {items[i].username}
-                        </Text>
-                        <Text style={styles.unColor}>
-                            {(items[i].partment || '') + '部－' + (items[i].tag || '') + '人员'}
-                        </Text>
-                    </View>
-                    <View style={{flex:1}}>
-                        <TouchableHighlight underlayColor="#fff"
-                                            onPress={this.showActionSheet.bind(this, items[i].tel, items[i].email, items[i].username)}>
-                            <Text style={styles.link}>
-                                {items[i].tel}
+            var comicList = i.comic;
+            for (var comicIndex in comicList) {
+                view.push(
+                    <View key={'addressItem' + i} style={styles.row}>
+                        <View style={[styles.text, color]}>
+                            <Text style={{fontSize:25, color:'#fff', fontWeight:'bold'}}>
+                                {comicList[comicIndex].comicTitle.substr(0, 1) || '未'}
                             </Text>
-                        </TouchableHighlight>
-                        <TouchableHighlight underlayColor="#fff"
-                                            onPress={this.showActionSheet.bind(this, items[i].tel, items[i].email, items[i].username)}>
-                            <Text style={styles.link}>
-                                {items[i].email}
+                        </View>
+                        <View style={styles.part}>
+                            <Text>
+                                {comicList[comicIndex].comicTitle}
                             </Text>
-                        </TouchableHighlight>
+                            <Text style={styles.unColor}>
+                                {comicList[comicIndex].author}
+                            </Text>
+                        </View>
+                        <View style={{flex:1}}>
+                            <TouchableHighlight underlayColor="#fff"
+                                                onPress={this.showActionSheet.bind(this, comicList[comicIndex].tel, comicList[comicIndex].email, comicList[comicIndex].username)}>
+                                <Text style={styles.link}>
+                                    {comicList[comicIndex].updatedContent}
+                                </Text>
+                            </TouchableHighlight>
+                            <TouchableHighlight underlayColor="#fff"
+                                                onPress={this.showActionSheet.bind(this, comicList[comicIndex].tel, comicList[comicIndex].email, comicList[comicIndex].username)}>
+                                <Text style={styles.link}>
+                                    {comicList[comicIndex].status ? "已完结" : "未完结"}
+                                </Text>
+                            </TouchableHighlight>
+                        </View>
                     </View>
-                </View>
-            );
+                );
+            }
         }
         return (
             <ScrollView>

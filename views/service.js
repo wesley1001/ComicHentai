@@ -3,6 +3,7 @@ var Service = {
     login: '/user/login',
     loginByToken: '/user/login/token',
     getUser: '/user/get',
+    getUser: '/user/getSpecial',
     createUser: '/user/create',
     getMessage: '/message/get',
     addMessage: '/message/add',

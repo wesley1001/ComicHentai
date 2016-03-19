@@ -23,7 +23,7 @@ var Item = React.createClass({
             <TouchableHighlight underlayColor="#fff" onPress={this._loadPage}>
                 <View style={[styles.itemBlock, size]}>
                     <View>
-                        <Text style={styles.font18}>大家好我是封面</Text>
+                        <Text style={styles.font18}>封面</Text>
                     </View>
                     <View>
                         <Text style={styles.font10}>{this.props.title}</Text>
@@ -36,12 +36,12 @@ var Item = React.createClass({
     _loadPage: function (e) {
         var nav = this.props.nav;
         var key = Util.key;
-        var partment = this.props.partment;
+        var title = this.props.title;
         var path = Service.host + Service.getUser;
         //跳转到Detail页
         Util.post(path, {
             key: key,
-            partment: partment
+            title: title
         }, function (data) {
             nav.push({
                 title: "专题信息",
