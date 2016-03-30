@@ -46,13 +46,19 @@ var Message = {
     //获取漫画信息
     getComic: function (req, res) {
         var key = req.param('key');
+        var page = req.param('page');
+        var path = ['./database/comic.json', './database/comic1.json', './database/comic2.json', './database/comic3.json']
+        if (page == null || page == undefined) {
+            page = 0;
+        }
+        console.log("当前为第" + page + "页")
         if (key !== util.getKey()) {
             return res.send({
                 status: 0,
                 data: '使用了没有鉴权的key'
             });
         }
-        fs.readFile(COMIC_PATH, function (err, data) {
+        fs.readFile(path[page % 3], function (err, data) {
             if (!err) {
                 try {
                     var obj = JSON.parse(data);

@@ -19,29 +19,38 @@ var {
     } = React;
 
 var REQUEST_COMIC_URL = Service.host + Service.getComic;
+var comicList = [];
 var Home = React.createClass({
 
     fetchData: function () {
-        var data = {
-            "key": Util.key
-        };
-        var fetchOptions = {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(data)
-        };
+        var that = this;
+        //TODO:之后去掉
+        AsyncStorage.getItem('token', function (err, token) {
+            if (!err && token) {
+                var data = {
+                    "key": Util.key
+                };
+                var fetchOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                };
 
-        fetch(REQUEST_COMIC_URL, fetchOptions)
-            .then((response) => response.json())
-            .then((responseText) => {
-                console.log(responseText);
-                this.setState({
-                    items: responseText.data
-                });
-            }).done();
+                fetch(REQUEST_COMIC_URL, fetchOptions)
+                    .then((response) => response.json())
+                    .then((responseText) => {
+                        console.log(responseText);
+                        that.setState({
+                            items: responseText.data
+                        });
+                    }).done();
+            } else {
+                console.log("尚未登录");
+            }
+        });
     },
 
 
@@ -82,9 +91,7 @@ var Home = React.createClass({
     },
 
     renderComic: function (items) {
-        var comicList = [];
-
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < items.length; i++) {
             comicList.push(
                 <ItemBlock
                     key={items[i].comicId}

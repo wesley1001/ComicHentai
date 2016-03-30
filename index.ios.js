@@ -230,7 +230,7 @@ var ComicHentai = React.createClass({
                                 selected={this.state.selectedTab === 'home'}
                                 onPress={this._selectTab.bind(this, 'home')}
                             >
-                                {this._addNavigator(Home, '主页')}
+                                {this._addNavigator(Home, '漫画绅士')}
                             </TabBarIOS.Item>
 
                             <TabBarIOS.Item
