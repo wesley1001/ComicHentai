@@ -19,7 +19,6 @@ var {
     } = React;
 
 var REQUEST_COMIC_URL = Service.host + Service.getComic;
-var comicList = [];
 var Home = React.createClass({
 
     fetchData: function () {
@@ -38,7 +37,6 @@ var Home = React.createClass({
                     },
                     body: JSON.stringify(data)
                 };
-
                 fetch(REQUEST_COMIC_URL, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
@@ -60,7 +58,8 @@ var Home = React.createClass({
         return {
             isRefreshing: false,
             width: width,
-            items: null
+            items: null,
+            thumbIndex: 0
         };
 
     },
@@ -91,6 +90,7 @@ var Home = React.createClass({
     },
 
     renderComic: function (items) {
+        var comicList = [];
         for (var i = 0; i < items.length; i++) {
             comicList.push(
                 <ItemBlock
@@ -102,7 +102,7 @@ var Home = React.createClass({
             );
         }
         return (
-            <ScrollView style={styles.container} refreshControl={
+            <ScrollView style={styles.container} scrollsToTop={true} refreshControl={
               <RefreshControl
                 refreshing={this.state.isRefreshing}
                 onRefresh={this._onRefresh}
@@ -116,7 +116,6 @@ var Home = React.createClass({
             </ScrollView>
         );
     },
-
 
     render: function () {
         if (!this.state.items) {
@@ -132,7 +131,7 @@ var Home = React.createClass({
 var styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 10,
+        marginBottom: 80,
     },
     itemRow: {
         flexDirection: 'row',
