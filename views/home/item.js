@@ -19,7 +19,7 @@ var Item = React.createClass({
         return (
             <TouchableOpacity onPress={this.loadPage.bind(this, this.props.data)}>
                 <View style={styles.item}>
-                    <View style={[styles.text, color]}>
+                    <View style={[styles.text]}>
                         <Text style={{fontSize:25, color:'#fff', fontWeight:'bold'}}>
                             {this.props.comicTitle.substr(0, 1) || '未'}
                         </Text>

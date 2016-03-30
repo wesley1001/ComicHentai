@@ -1,17 +1,21 @@
 /**
  * Created by vczero on 15/7/12.
  */
-
 var React = require('react-native');
 var Util = require('./util');
-var ItemBlock = require('./home/itemblock');
+var Item = require('./home/item');
+var Detail = require('./home/detail');
+var Service = require('./service');
 
 var {
     View,
     Text,
     ScrollView,
     StyleSheet,
+    TextInput,
+    Image,
     TouchableHighlight,
+    TouchableOpacity,
     } = React;
 
 var Home = React.createClass({
@@ -63,21 +67,55 @@ var Home = React.createClass({
         };
     },
 
-    render: function () {
+
+    render: function(){
+        var contents = [];
+        var items = [];
+        contents = this.state.items;
+
+        for(var i = 0; i < contents.length; i++){
+            console.log(contents);
+            items.push(
+                <Item
+                    data={contents[i]}
+                    nav={this.props.navigator}
+                    component={Detail}
+                    key={contents[i].comicTitle}
+                    text={contents[i].message}
+                    name={contents[i].username}
+                    date={contents[i].time}/>
+            );
+        }
+
+        return (
+            <ScrollView style={styles.container}>
+                <View style={{height:50,padding:7,}}>
+                    <TextInput style={styles.search} placeholder="搜索"/>
+                </View>
+                <View style={{backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
+                    {items}
+                    <View style={{height:35}}></View>
+                </View>
+            </ScrollView>
+        );
+    }
+
+    /*render: function () {
         var Items1 = [];
         var Items2 = [];
         var items = this.state.items;
 
         for (var i = 0; i < 4; i++) {
             Items1.push(
-                <ItemBlock
-                    key={items[i].id}
-                    title={items[i].title}
-                    partment={items[i].partment}
-                    width={this.state.width}
-                    color={items[i].color}
+                <Item
+                    data={contents[i]}
                     nav={this.props.navigator}
-                />
+                    component={Detail}
+                    key={contents[i].messageid}
+                    text={contents[i].message}
+                    name={contents[i].username}
+                    date={contents[i].time}/>
+
             );
         }
 
@@ -105,18 +143,27 @@ var Home = React.createClass({
 
             </ScrollView>
         );
-    }
+    }*/
 });
 
+
 var styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        padding: 10,
+    container:{
+        flex:1,
+        backgroundColor:'#F5F5F5',
+        flexDirection:'column'
     },
-    itemRow: {
-        flexDirection: 'row',
-        marginBottom: 20,
+    search:{
+        height:35,
+        borderWidth:Util.pixel,
+        borderColor:'#ccc',
+        paddingLeft:10,
+        borderRadius:6,
+        backgroundColor:'#fff',
     }
 });
 
 module.exports = Home;
+
+
+
