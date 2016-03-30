@@ -1,25 +1,20 @@
 var React = require('react-native');
-var Detail = require('./detail');
-var Service = require('./../service');
 var Util = require('../util');
-
 var {
     View,
     Text,
-    Image,
     StyleSheet,
+    Image,
+    ScrollView,
     TouchableOpacity,
     } = React;
 
-//每个单项组件
-var ItemBlock = React.createClass({
+var number = Math.floor(Util.size.width - 20);
+var Detail = React.createClass({
     render: function () {
-        var colors = ['#E20079', '#FFD602', '#25BFFE', '#F90000', '#04E246', '#04E246', '#00AFC9'];
-        var color = {
-            backgroundColor: colors[parseInt(Math.random() * 7)]
-        };
+
+        var comic = this.props.comicData;
         var rank = ['E', 'D', 'C', 'B', 'A', 'S']
-        var comic = this.props.comic;
         var comicTitle = comic.comicTitle;
         if (comicTitle.length > 40) {
             if (comicTitle.contains("]")) {
@@ -27,19 +22,16 @@ var ItemBlock = React.createClass({
             }
             comicTitle = comicTitle.substring(1, 40) + (comicTitle.length > 39 ? "..." : "");
         }
-
-
-        //i中的每个元素都是一个专题的具体信息,一个专题内部会有多个漫画
         return (
-            <TouchableOpacity onPress={this._loadPage.bind(this,comic.comicId)}>
+            <ScrollView style={styles.container}>
                 <View key={'comic' + this.props.key} style={styles.row}>
                     <Image
-                        style={[styles.text]}
+                        style={[styles.img]}
                         source={{uri: comic.comicCover}}
                     />
                     <View>
                         <Text style={styles.noColor}>
-                            {comicTitle}
+                            {"名称:" + comicTitle}
                         </Text>
                         <Text style={styles.unColor}>
                             {"最新更新时间:" + comic.comicDate}
@@ -49,28 +41,21 @@ var ItemBlock = React.createClass({
                         </Text>
                     </View>
                 </View>
-            </TouchableOpacity>
+                <View key={'info' + this.props.key} style={[styles.row,{marginTop:5}]}>
+                    <View>
+                        <Text style={[styles.noColor,{marginLeft:1}]}>
+                            {"漫画标签:" + comic.comicTag}
+                        </Text>
+                        <Text style={[styles.unColor,{marginLeft:1}]}>
+                            {"漫画类别:" + comic.comicCategory}
+                        </Text>
+                        <Text style={[styles.unColor,{marginLeft:1}]}>
+                            {"漫画描述:" + comic.comicTitle}
+                        </Text>
+                    </View>
+                </View>
+            </ScrollView>
         );
-    },
-    //加载页面
-    _loadPage: function (data) {
-        var nav = this.props.nav;
-        var key = Util.key;
-        var path = Service.host + Service.getComic;
-        var comicId = data;
-        Util.post(path, {
-            key: key,
-            comicId: comicId
-        }, function (resp) {
-            nav.push({
-                title: "漫画详情",
-                component: Detail,
-                passProps: {
-                    comicId: comicId,
-                    comicData: resp.data
-                }
-            });
-        }.bind(this));
     }
 });
 
@@ -80,21 +65,24 @@ var styles = StyleSheet.create({
         marginBottom: 80,
     },
     row: {
-        height: 80,
+        height: 110,
         borderBottomWidth: Util.pixel,
         borderBottomColor: '#ccc',
         flexDirection: 'row',
+        alignSelf: 'stretch',
         alignItems: 'center'
     },
-    text: {
-        width: 75,
-        height: 75,
+    img: {
+        width: 100,
+        height: 100,
         borderRadius: 4,
         marginLeft: 0,
         alignItems: 'center',
         justifyContent: 'center',
     },
     noColor: {
+        width:Util.size.width,
+        alignSelf: 'stretch',
         fontSize: 12,
         marginLeft: 5
     },
@@ -103,6 +91,8 @@ var styles = StyleSheet.create({
         marginTop: 2,
     },
     unColor: {
+        width:Util.size.width,
+        alignSelf: 'stretch',
         color: '#575656',
         marginTop: 8,
         fontSize: 12,
@@ -110,4 +100,4 @@ var styles = StyleSheet.create({
     }
 });
 
-module.exports = ItemBlock;
+module.exports = Detail;

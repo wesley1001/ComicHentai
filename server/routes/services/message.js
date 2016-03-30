@@ -3,7 +3,7 @@ var util = require('./../util');
 var MESSAGE_PATH = './database/message.json';
 var USER_PATH = './database/user.json';
 var COMIC_PATH = './database/comic.json';
-
+var TOTAL_PATH = './database/total.json';
 var Message = {
     init: function (app) {
         app.post('/message/get', this.getMessage);
@@ -35,7 +35,6 @@ var Message = {
                     });
                 }
             }
-
             return res.send({
                 status: 0,
                 err: err
@@ -47,39 +46,69 @@ var Message = {
     getComic: function (req, res) {
         var key = req.param('key');
         var page = req.param('page');
+        var comicId = req.param('comicId');
         var path = ['./database/comic.json', './database/comic1.json', './database/comic2.json', './database/comic3.json']
         if (page == null || page == undefined) {
             page = 0;
         }
-        console.log("当前为第" + page + "页")
         if (key !== util.getKey()) {
             return res.send({
                 status: 0,
                 data: '使用了没有鉴权的key'
             });
         }
-        fs.readFile(path[page % 3], function (err, data) {
-            if (!err) {
-                try {
-                    var obj = JSON.parse(data);
-                    console.log(obj);
-                    return res.send({
-                        status: 1,
-                        data: obj
-                    });
-                } catch (e) {
-                    return res.send({
-                        status: 0,
-                        err: e
-                    });
-                }
-            }
 
-            return res.send({
-                status: 0,
-                err: err
+        if (comicId != null && comicId != undefined) {
+            console.log("漫画ID:" + comicId);
+            fs.readFile(TOTAL_PATH, function (err, data) {
+                if (!err) {
+                    try {
+                        var obj = JSON.parse(data);
+                        for (var i = 0; i < obj.length; i++) {
+                            if (obj[i].comicId == comicId) {
+                                console.log(obj[i]);
+                                return res.send({
+                                    status: 1,
+                                    data: obj[i]
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        return res.send({
+                            status: 0,
+                            err: e
+                        });
+                    }
+                }
+                return res.send({
+                    status: 0,
+                    err: err
+                });
             });
-        });
+        } else {
+            console.log("当前为第" + page + "页")
+            fs.readFile(path[page % 3], function (err, data) {
+                if (!err) {
+                    try {
+                        var obj = JSON.parse(data);
+                        console.log(obj);
+                        return res.send({
+                            status: 1,
+                            data: obj
+                        });
+                    } catch (e) {
+                        return res.send({
+                            status: 0,
+                            err: e
+                        });
+                    }
+                }
+                return res.send({
+                    status: 0,
+                    err: err
+                });
+            });
+        }
     },
 
     //增加公告消息
