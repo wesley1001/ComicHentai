@@ -10,35 +10,25 @@ var {
     TouchableOpacity,
     } = React;
 
-/**
- * 单个漫画的列信息
- */
 var Item = React.createClass({
     render: function () {
-        //一个data里面包含的是一个comic对象
         return (
             <TouchableOpacity onPress={this.loadPage.bind(this, this.props.data)}>
                 <View style={styles.item}>
-                    <View style={[styles.text]}>
-                        <Text style={{fontSize:25, color:'#fff', fontWeight:'bold'}}>
-                            {this.props.comicTitle.substr(0, 1) || '未'}
-                        </Text>
+                    <View style={styles.width55}>
+                        <Text
+                            style={{color:'#fff', fontSize:18,fontWeight:'bold'}}>{this.props.name.substr(0, 1)}</Text>
                     </View>
                     <View style={{flexDirection:'column',flex:1}}>
                         <Text numberOfLines={2} style={styles.text}>
-                            {this.props.comicTitle}
+                            {this.props.text}
                         </Text>
-                        <Text style={styles.unColor}>
-                            {this.props.author}
+                        <Text style={styles.date}>
+                            {this.props.date}
                         </Text>
                     </View>
                     <View numberOfLines={1} style={styles.m10}>
-                        <Text style={styles.link}>
-                            {this.props.updatedContent}
-                        </Text>
-                        <Text style={styles.link}>
-                            {this.props.status ? "已完结" : "未完结"}
-                        </Text>
+                        <Text style={styles.name}>{this.props.name}</Text>
                     </View>
                 </View>
             </TouchableOpacity>

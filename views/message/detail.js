@@ -8,29 +8,24 @@ var {
     TouchableOpacity,
     } = React;
 
-/**
- * 单个漫画的详情页
- */
-
 var Detail = React.createClass({
     render: function () {
-        //前面的页面传过来的信息
         var content = this.props.content;
         return (
             <ScrollView>
 
                 <View style={styles.content}>
-                    <Text style={{lineHeight:20,}}>{content.comicTitle}</Text>
+                    <Text style={{lineHeight:20,}}>{content.message}</Text>
                 </View>
 
                 <View style={[styles.luokuan, {marginTop:25}]}>
                     <View style={{flex:1}}></View>
-                    <Text style={[styles.text, {color:'#007AFF'}]}>{content.author}</Text>
+                    <Text style={[styles.text, {color:'#007AFF'}]}>{content.username}</Text>
                 </View>
 
                 <View style={styles.luokuan}>
                     <View style={{flex:1}}></View>
-                    <Text style={[styles.text, {color:'#3BC1FF'}]}>{content.updatedContent}</Text>
+                    <Text style={[styles.text, {color:'#3BC1FF'}]}>{content.time}</Text>
                 </View>
 
             </ScrollView>
