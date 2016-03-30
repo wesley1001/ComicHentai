@@ -6,6 +6,7 @@ var Util = require('../util');
 var {
     View,
     Text,
+    Image,
     StyleSheet,
     TouchableOpacity,
     } = React;
@@ -17,32 +18,34 @@ var ItemBlock = React.createClass({
         var color = {
             backgroundColor: colors[parseInt(Math.random() * 7)]
         };
+        var rank = ['E', 'D', 'C', 'B', 'A', 'S']
         var comic = this.props.comic;
-        console.log(comic)
+        var comicTitle = comic.comicTitle;
+        if (comicTitle.length > 30) {
+            if (comicTitle.contains("]")) {
+                comicTitle = comicTitle.split("]")[1].split("[")[0]
+            }
+            comicTitle = comicTitle.substring(1, 30) + "...";
+        }
+
 
         //i中的每个元素都是一个专题的具体信息,一个专题内部会有多个漫画
         return (
             <TouchableOpacity onPress={this._loadPage.bind(this,comic.comicId)}>
                 <View key={'comic' + this.props.key} style={styles.row}>
-                    <View style={[styles.text, color]}>
-                        <Text style={{fontSize:25, color:'#fff', fontWeight:'bold'}}>
-                            {comic.comicTitle.substr(0, 1) || '未'}
-                        </Text>
-                    </View>
-                    <View style={styles.part}>
-                        <Text>
-                            {comic.comicTitle}
+                    <Image
+                        style={[styles.text]}
+                        source={{uri: comic.comicCover}}
+                    />
+                    <View>
+                        <Text style={styles.noColor}>
+                            {comicTitle}
                         </Text>
                         <Text style={styles.unColor}>
-                            {comic.author}
+                            {"最新更新时间:" + comic.comicDate}
                         </Text>
-                    </View>
-                    <View style={{flex:1}}>
-                        <Text style={styles.link}>
-                            {comic.updatedContent}
-                        </Text>
-                        <Text style={styles.link}>
-                            {comic.status ? "已完结" : "未完结"}
+                        <Text style={styles.unColor}>
+                            {"平均评分:" + rank[comic.comicRank]}
                         </Text>
                     </View>
                 </View>
@@ -80,17 +83,16 @@ var styles = StyleSheet.create({
         alignItems: 'center'
     },
     text: {
-        width: 50,
-        height: 50,
+        width: 75,
+        height: 75,
         borderRadius: 4,
         marginLeft: 0,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#E30082',
     },
-    part: {
-        marginLeft: 5,
-        flex: 1,
+    noColor: {
+        fontSize: 12,
+        marginLeft:5
     },
     link: {
         color: '#1BB7FF',
@@ -100,6 +102,7 @@ var styles = StyleSheet.create({
         color: '#575656',
         marginTop: 8,
         fontSize: 12,
+        marginLeft:5
     }
 });
 

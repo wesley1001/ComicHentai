@@ -39,7 +39,7 @@ var Home = React.createClass({
             .then((responseText) => {
                 console.log(responseText);
                 this.setState({
-                    items: responseText.data.comicList
+                    items: responseText.data
                 });
             }).done();
     },
@@ -82,11 +82,9 @@ var Home = React.createClass({
     },
 
     renderComic: function (items) {
-        console.log("当前漫画");
-        console.log(items);
-
         var comicList = [];
-        for (var i = 0; i < items.length; i++) {
+
+        for (var i = 0; i < 10; i++) {
             comicList.push(
                 <ItemBlock
                     key={items[i].comicId}
