@@ -1,5 +1,6 @@
 /**
- * Created by vczero on 15/7/12.
+ * 主页
+ * Created by hope6537 on 16/01/30
  */
 
 var React = require('react-native');
@@ -14,20 +15,26 @@ var {
     StyleSheet,
     TimerMixin,
     AsyncStorage,
+    ListView,
     RefreshControl,
     TouchableHighlight,
     } = React;
 
 var REQUEST_COMIC_URL = Service.host + Service.getComic;
+var PAGE = 0;
 var Home = React.createClass({
 
-    fetchData: function () {
+    fetchData: function (page) {
+        if (page == null || page == undefined) {
+            page = 0;
+        }
         var that = this;
         //TODO:之后去掉
         AsyncStorage.getItem('token', function (err, token) {
             if (!err && token) {
                 var data = {
-                    "key": Util.key
+                    key: Util.key,
+                    page: page
                 };
                 var fetchOptions = {
                     method: 'POST',
@@ -40,9 +47,11 @@ var Home = React.createClass({
                 fetch(REQUEST_COMIC_URL, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
-                        console.log(responseText);
+                        //创建ListView
+                        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
                         that.setState({
-                            items: responseText.data
+                            items: that.state.items.concat(responseText.data),
+                            dataSource: ds.cloneWithRows(that.state.items.concat(responseText.data))
                         });
                     }).done();
             } else {
@@ -58,21 +67,21 @@ var Home = React.createClass({
         return {
             isRefreshing: false,
             width: width,
-            items: null,
-            thumbIndex: 0
+            items: [],
+            thumbIndex: 0,
         };
-
     },
 
-    componentDidMount: function () {
-        this.fetchData()
+    componentWillMount: function () {
+        this.fetchData(0);
     },
 
     _onRefresh() {
+        PAGE = 0;
         this.setState({isRefreshing: true});
         setTimeout(() => {
             // prepend 10 items
-            this.fetchData()
+            this.fetchData(0);
             this.setState({
                 isRefreshing: false,
             });
@@ -89,40 +98,48 @@ var Home = React.createClass({
         );
     },
 
-    renderComic: function (items) {
-        var comicList = [];
-        for (var i = 0; i < items.length; i++) {
-            comicList.push(
-                <ItemBlock
-                    key={items[i].comicId}
-                    comic={items[i]}
-                    width={this.state.width}
-                    nav={this.props.navigator}
-                />
-            );
-        }
+    renderRow: function (rowData) {
+        return (<ItemBlock
+            key={rowData.comicId}
+            comic={rowData}
+            width={this.state.width}
+            nav={this.props.navigator}
+        />);
+    },
+
+    renderRefresh: function () {
+        return (<RefreshControl
+            refreshing={this.state.isRefreshing}
+            onRefresh={this._onRefresh}
+            tintColor="#ff0000"
+            title="刷新中..."
+            colors={['#ff0000', '#00ff00', '#0000ff']}
+            progressBackgroundColor="#ffff00"
+        />);
+    },
+
+    renderComic: function () {
         return (
-            <ScrollView style={styles.container} scrollsToTop={true} refreshControl={
-              <RefreshControl
-                refreshing={this.state.isRefreshing}
-                onRefresh={this._onRefresh}
-                tintColor="#ff0000"
-                title="刷新中..."
-                colors={['#ff0000', '#00ff00', '#0000ff']}
-                progressBackgroundColor="#ffff00"
-              />
-            }>
-                {comicList}
-            </ScrollView>
+            <ListView style={styles.container}
+                      onEndReached={this.renderNextPage}
+                      dataSource={this.state.dataSource}
+                      renderRow={(rowData) => this.renderRow(rowData)}
+                      refreshControl={this.renderRefresh()}
+            />
         );
     },
 
+    renderNextPage: function () {
+        console.log("nextPage");
+        PAGE += 1;
+        this.fetchData(PAGE);
+    },
+
     render: function () {
-        if (!this.state.items) {
+        if (!this.state.items || this.state.items.length == 0) {
             return this.renderLoadingView();
         }
-        var items = this.state.items;
-        return this.renderComic(items)
+        return this.renderComic()
     }
 
 
