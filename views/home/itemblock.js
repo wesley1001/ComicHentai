@@ -13,82 +13,65 @@ var {
 //每个单项组件
 var ItemBlock = React.createClass({
     render: function () {
-        var size = {
-            width: parseInt(this.props.width),
-            height: parseInt(this.props.width),
-            backgroundColor: this.props.color,
+        var colors = ['#E20079', '#FFD602', '#25BFFE', '#F90000', '#04E246', '#04E246', '#00AFC9'];
+        var color = {
+            backgroundColor: colors[parseInt(Math.random() * 7)]
         };
+        var comic = this.props.comic;
+        console.log(comic)
+
+        //i中的每个元素都是一个专题的具体信息,一个专题内部会有多个漫画
         return (
-            <TouchableOpacity onPress={this.loadPage.bind(this, this.props.data)}>
-                <View style={styles.item}>
-                    <View style={styles.width55}>
-                        <Text
-                            style={{color:'#fff', fontSize:18,fontWeight:'bold'}}>{this.props.title.substr(0, 1)}</Text>
-                    </View>
-                    <View style={{flexDirection:'column',flex:1}}>
-                        <Text numberOfLines={2} style={styles.text}>
-                            {this.props.title}
-                        </Text>
-                        <Text style={styles.date}>
-                            {this.props.partment}
+            <TouchableOpacity onPress={this._loadPage.bind(this,comic.comicId)}>
+                <View key={'comic' + this.props.key} style={styles.row}>
+                    <View style={[styles.text, color]}>
+                        <Text style={{fontSize:25, color:'#fff', fontWeight:'bold'}}>
+                            {comic.comicTitle.substr(0, 1) || '未'}
                         </Text>
                     </View>
-                    <View numberOfLines={1} style={styles.m10}>
-                        <Text style={styles.name}>{this.props.title}</Text>
+                    <View style={styles.part}>
+                        <Text>
+                            {comic.comicTitle}
+                        </Text>
+                        <Text style={styles.unColor}>
+                            {comic.author}
+                        </Text>
+                    </View>
+                    <View style={{flex:1}}>
+                        <Text style={styles.link}>
+                            {comic.updatedContent}
+                        </Text>
+                        <Text style={styles.link}>
+                            {comic.status ? "已完结" : "未完结"}
+                        </Text>
                     </View>
                 </View>
             </TouchableOpacity>
         );
     },
     //加载页面
-    _loadPage: function (e) {
+    _loadPage: function (data) {
         var nav = this.props.nav;
         var key = Util.key;
-        var partment = this.props.partment;
-        var path = Service.host + Service.getUser;
-
+        var path = Service.host + Service.getComic;
+        var comicId = data;
         Util.post(path, {
             key: key,
-            partment: partment
+            comicId: comicId
         }, function (data) {
             nav.push({
-                title: "人员信息",
+                title: "漫画详情",
                 component: Address,
                 passProps: {
-                    data: data
+                    comicId: comicId,
+                    comicData: data
                 }
             });
         }.bind(this));
-    },
-    loadPage: function (data) {
-        var content = data;
-        this.props.nav.push({
-            title: '消息详情',
-            component: this.props.component,
-            passProps: {
-                content: content
-            }
-        });
-
     }
 });
 
 var styles = StyleSheet.create({
-    itemBlock: {
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderRadius: 5,
-        marginLeft: 0,
-    },
-    font18: {
-        color: '#fff',
-        fontSize: 18,
-        fontWeight: '500',
-    },
-    font10: {
-        color: '#fff',
-        fontSize: 10,
-    },
     row: {
         height: 80,
         borderBottomWidth: Util.pixel,
@@ -96,44 +79,27 @@ var styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center'
     },
-    item: {
-        height: 80,
-        padding: 5,
-        borderBottomWidth: Util.pixel,
-        borderBottomColor: '#ddd',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-    img: {
-        width: 50,
-        height: 50,
-        borderRadius: 4,
-    },
-    width55: {
+    text: {
         width: 50,
         height: 50,
         borderRadius: 4,
         marginLeft: 0,
         alignItems: 'center',
         justifyContent: 'center',
-        backgroundColor: '#05C147',
-        marginRight: 10,
+        backgroundColor: '#E30082',
     },
-    text: {
+    part: {
+        marginLeft: 5,
         flex: 1,
-        marginBottom: 5,
-        opacity: 0.7
     },
-    date: {
-        color: '#ccc',
-        fontSize: 11,
+    link: {
+        color: '#1BB7FF',
+        marginTop: 2,
     },
-    m10: {
-        marginLeft: 10
-    },
-    name: {
-        color: '#929292',
-        fontSize: 13
+    unColor: {
+        color: '#575656',
+        marginTop: 8,
+        fontSize: 12,
     }
 });
 

@@ -95,6 +95,7 @@ var ComicHentai = React.createClass({
                 data: data
             });
         });
+
     },
 
     _selectTab: function (tabName) {

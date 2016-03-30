@@ -8,59 +8,120 @@ var ItemBlock = require('./home/itemblock');
 var Service = require('./service')
 
 var {
-    View,
     Text,
+    View ,
     ScrollView,
     StyleSheet,
+    TimerMixin,
+    AsyncStorage,
+    RefreshControl,
     TouchableHighlight,
     } = React;
 
+var REQUEST_COMIC_URL = Service.host + Service.getComic;
 var Home = React.createClass({
+
+    fetchData: function () {
+        var data = {
+            "key": Util.key
+        };
+        var fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        };
+
+        fetch(REQUEST_COMIC_URL, fetchOptions)
+            .then((response) => response.json())
+            .then((responseText) => {
+                console.log(responseText);
+                this.setState({
+                    items: responseText.data.comicList
+                });
+            }).done();
+    },
+
+
     getInitialState: function () {
         //减去paddingLeft && paddingRight && space
         var width = Math.floor(Util.size.width);
-        //获取真正的漫画数据
-
-        var path = Service.host + Service.getComic;
-        var that = this;
-        Util.post(path, {
-            key: Util.key
-        }, function (data) {
-            that.setState({
-                items: items
-            });
-        });
-
         return {
-            items: items,
-            width: width
+            isRefreshing: false,
+            width: width,
+            items: null
         };
+
     },
 
-    render: function () {
-        var Items1 = [];
-        var items = this.state.items;
+    componentDidMount: function () {
+        this.fetchData()
+    },
+
+    _onRefresh() {
+        this.setState({isRefreshing: true});
+        setTimeout(() => {
+            // prepend 10 items
+            this.fetchData()
+            this.setState({
+                isRefreshing: false,
+            });
+        }, 1000);
+    },
+
+    renderLoadingView: function () {
+        return (
+            <View style={styles.container}>
+                <Text>
+                    正在读取中...
+                </Text>
+            </View>
+        );
+    },
+
+    renderComic: function (items) {
         console.log("当前漫画");
         console.log(items);
 
-        for (var i = 0; i < 4; i++) {
-            Items1.push(
+        var comicList = [];
+        for (var i = 0; i < items.length; i++) {
+            comicList.push(
                 <ItemBlock
-                    key={items[i].id}
-                    title={items[i].title}
-                    partment={items[i].partment}
+                    key={items[i].comicId}
+                    comic={items[i]}
                     width={this.state.width}
-                    color={items[i].color}
                     nav={this.props.navigator}
                 />
             );
         }
         return (
-            <ScrollView style={styles.container}>
-                {Items1}
+            <ScrollView style={styles.container} refreshControl={
+              <RefreshControl
+                refreshing={this.state.isRefreshing}
+                onRefresh={this._onRefresh}
+                tintColor="#ff0000"
+                title="刷新中..."
+                colors={['#ff0000', '#00ff00', '#0000ff']}
+                progressBackgroundColor="#ffff00"
+              />
+            }>
+                {comicList}
             </ScrollView>
         );
+    },
+
+
+    render: function () {
+        if (!this.state.items) {
+            return this.renderLoadingView();
+        }
+        var items = this.state.items;
+        return this.renderComic(items)
     }
+
+
 });
 
 var styles = StyleSheet.create({
