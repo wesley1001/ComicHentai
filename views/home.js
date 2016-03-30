@@ -5,6 +5,7 @@
 var React = require('react-native');
 var Util = require('./util');
 var ItemBlock = require('./home/itemblock');
+var Service = require('./service')
 
 var {
     View,
@@ -17,45 +18,18 @@ var {
 var Home = React.createClass({
     getInitialState: function () {
         //减去paddingLeft && paddingRight && space
-        var width = Math.floor(((Util.size.width - 20) - 50) / 4);
-        var items = [
-            {
-                id: 1,
-                title: '研发',
-                partment: '框架研发',
-                color: '#126AFF',
-            },
-            {
-                id: 2,
-                title: '研发',
-                partment: 'BU研发',
-                color: '#FFD600',
-            },
-            {
-                id: 3,
-                title: '产品',
-                partment: '公共产品',
-                color: '#F80728',
-            },
-            {
-                id: 4,
-                title: '产品',
-                partment: 'BU产品',
-                color: '#05C147',
-            },
-            {
-                id: 5,
-                title: '产品',
-                partment: '启明星',
-                color: '#FF4EB9',
-            },
-            {
-                id: 6,
-                title: '项目',
-                partment: '项目管理',
-                color: '#EE810D',
-            }
-        ];
+        var width = Math.floor(Util.size.width);
+        //获取真正的漫画数据
+
+        var path = Service.host + Service.getComic;
+        var that = this;
+        Util.post(path, {
+            key: Util.key
+        }, function (data) {
+            that.setState({
+                items: items
+            });
+        });
 
         return {
             items: items,
@@ -65,8 +39,9 @@ var Home = React.createClass({
 
     render: function () {
         var Items1 = [];
-        var Items2 = [];
         var items = this.state.items;
+        console.log("当前漫画");
+        console.log(items);
 
         for (var i = 0; i < 4; i++) {
             Items1.push(
@@ -80,29 +55,9 @@ var Home = React.createClass({
                 />
             );
         }
-
-        for (var i = 4; i < items.length; i++) {
-            Items2.push(
-                <ItemBlock
-                    key={items[i].id}
-                    title={items[i].title}
-                    partment={items[i].partment}
-                    width={this.state.width}
-                    color={items[i].color}
-                    nav={this.props.navigator}
-                />
-            );
-        }
-
         return (
             <ScrollView style={styles.container}>
-                <View style={styles.itemRow}>
-                    {Items1}
-                </View>
-                <View style={styles.itemRow}>
-                    {Items2}
-                </View>
-
+                {Items1}
             </ScrollView>
         );
     }
