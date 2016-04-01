@@ -32,6 +32,23 @@ var Util = {
                 callback(JSON.parse(responseText));
             });
     },
+    post_no_async: function (url, data, callback) {
+        var fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            async: true,
+            body: JSON.stringify(data)
+        };
+
+        fetch(url, fetchOptions)
+            .then((response) => response.text())
+            .then((responseText) => {
+                callback(JSON.parse(responseText));
+            });
+    },
     //Key
     key: 'HSHHSGSGGSTWSYWSYUSUWSHWBS-REACT-NATIVE'
 

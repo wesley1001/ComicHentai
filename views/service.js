@@ -6,6 +6,7 @@ var Service = {
     getUserSpecial: '/user/getSpecial',
     createUser: '/user/create',
     getMessage: '/message/get',
+    getComic: '/comic/get',
     addMessage: '/message/add',
     updatePassword: '/user/password/update',
     deleteUser: '/user/delete'
