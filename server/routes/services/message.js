@@ -52,7 +52,7 @@ var Message = {
     searchComic: function (req, res) {
         var key = req.param('key');
         var page = req.param('page');
-        var title = req.param('title');
+        var keyWord = req.param('keyWord');
         if (page == null || page == undefined) {
             page = 0;
         }
@@ -63,10 +63,10 @@ var Message = {
             });
         }
 
-        if (title == undefined) {
-            title = ' ';
+        if (keyWord == undefined) {
+            keyWord = ' ';
         }
-        console.log("搜素关键字为:" + title);
+        console.log("搜素关键字为:" + keyWord);
         fs.readFile(TOTAL_PATH, function (err, data) {
             if (!err) {
                 try {
@@ -74,8 +74,7 @@ var Message = {
                     var obj = JSON.parse(data);
                     var resultList = [];
                     for (var i = 0; i < obj.length; i++) {
-                        if (obj[i].comicTitle.indexOf(title) != -1) {
-                            console.log(obj[i]);
+                        if (obj[i].comicTitle.indexOf(keyWord) != -1) {
                             count++;
                             resultList.push(obj[i]);
                             if (count > 10) {
@@ -83,8 +82,7 @@ var Message = {
                             }
                         }
                     }
-                    console.log("返回结果为");
-                    console.log(resultList);
+                    console.log("个数为" + count);
                     return res.send({
                         status: 1,
                         data: resultList

@@ -39,8 +39,6 @@ var Search = React.createClass({
                 searchHistory = "[]";
             }
             searchHistory = JSON.parse(searchHistory);
-            console.log("历史记录为");
-            console.log(searchHistory);
             that.setState({
                 searchHistory: searchHistory
             });
@@ -48,7 +46,6 @@ var Search = React.createClass({
     },
 
     autoComplete: function (val) {
-        console.log("停止输入.autocomplete");
         console.log("值为" + val);
         if (val == null || val == undefined || val == "") {
             this.setState({
@@ -58,10 +55,11 @@ var Search = React.createClass({
             })
         }
         var thisTime = Math.floor(Date.now());
-        console.log("现在时间" + thisTime);
-        console.log("之前时间" + this.state.lastEditTime);
         var divide = thisTime - this.state.lastEditTime;
         if (divide > 1500) {
+            this.setState({
+                hasKeyWord: false
+            });
             console.log("超过1500毫秒,发送请求");
             this.setState({
                 keyWord: val,
@@ -79,7 +77,6 @@ var Search = React.createClass({
 
     submitKeyWord: function (val) {
         var that = this;
-        console.log("提交输入.submitKeyWord");
         console.log("值为" + val);
         var keyWord = val;
         if (keyWord == null || keyWord == undefined || keyWord == "") {
@@ -95,39 +92,34 @@ var Search = React.createClass({
             }
             searchHistory = JSON.parse(searchHistory);
             searchHistory.push(keyWord);
-            console.log("搜索记录为");
-            console.log(searchHistory);
-            AsyncStorage.setItem("searchHistory", JSON.stringify(searchHistory), function (err) {
-                console.log(err);
-                console.log("保存搜索记录发生异常")
-            }).done();
+            AsyncStorage.setItem("searchHistory", JSON.stringify(searchHistory)).done();
             that.setState({
-                searchHistory: searchHistory
+                hasKeyWord: false
+            });
+            that.setState({
+                searchHistory: searchHistory,
+                keyWord: keyWord,
+                lastEditTime: 0,
+                hasKeyWord: true
             });
         }).done();
-        this.setState({
-            keyWord: keyWord,
-            lastEditTime: 0,
-            hasKeyWord: true
-        })
+
 
     },
 
     renderHistory: function () {
         var history = this.state.searchHistory;
-        console.log("历史信息为");
-        console.log(history);
         if (!history || history == "[]" || history == []) {
             return (<Text style={styles.unColor}>无历史记录</Text>);
         }
         var recordCount = 0;
         var item = [];
         for (var i = history.length; i > 0; i--) {
-            if(history[i] == "" || history[i] == undefined || history == null){
+            if (history[i] == "" || history[i] == undefined || history == null) {
                 continue;
             }
             item.push(
-                <View style={styles.row} key={history[i]+"_history_view"}>
+                <View style={styles.row} key={history[i]+Math.random()+"_history_view"}>
                     <Text style={styles.unColor} key={history[i]+"_history"}>{history[i]}</Text>
                 </View>
             );
@@ -159,6 +151,7 @@ var Search = React.createClass({
             <Home
                 navigator={this.props.navigator}
                 requestUrl={REQUEST_COMIC_URL}
+                keyWord={this.state.keyWord}
             />
         </View>);
     },

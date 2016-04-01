@@ -26,16 +26,18 @@ var REQUEST_COMIC_URL = Service.host + Service.getComic;
 var PAGE = 0;
 var Home = React.createClass({
 
-
     clearData: function () {
         this.setState({
             items: []
         });
     },
 
-    fetchData: function (page) {
+    fetchData: function (page, keyWord) {
         if (page == null || page == undefined) {
             page = 0;
+        }
+        if (keyWord == null || keyWord == undefined) {
+            keyWord = "";
         }
         var that = this;
         //TODO:之后去掉
@@ -43,7 +45,8 @@ var Home = React.createClass({
             if (!err && token) {
                 var data = {
                     key: Util.key,
-                    page: page
+                    page: page,
+                    keyWord: keyWord
                 };
                 var fetchOptions = {
                     method: 'POST',
@@ -74,28 +77,33 @@ var Home = React.createClass({
     getInitialState: function () {
         //减去paddingLeft && paddingRight && space
         var width = Math.floor(Util.size.width);
+        var keyWord = null;
         if (this.props.requestUrl != undefined) {
             console.log("请求变更为" + this.props.requestUrl);
             REQUEST_COMIC_URL = this.props.requestUrl;
+            keyWord = this.props.keyWord;
         }
+        console.log("关键词为" + this.props.keyWord);
+        console.log("重新渲染");
         return {
             isLoadingTail: false,
             isRefreshing: false,
             width: width,
             items: [],
             thumbIndex: 0,
-            loadNext: false
+            loadNext: false,
+            keyWord: keyWord
         };
     },
 
     componentWillMount: function () {
-        this.fetchData(0);
+        console.log("关键词为" + this.state.keyWord);
+        console.log("二次渲染");
+        this.setState({keyWord: this.props.keyWord});
+        this.fetchData(0, this.state.keyWord);
 
     },
 
-    componentDidMount: function () {
-        console.log("navigator undefined ? home =[" + this.props.navigator == undefined + "]");
-    },
 
     _onRefresh() {
         PAGE = 0;
@@ -103,7 +111,7 @@ var Home = React.createClass({
         setTimeout(() => {
             // prepend 10 items
             this.clearData();
-            this.fetchData(0);
+            this.fetchData(0, this.state.keyWord);
             this.setState({
                 isRefreshing: false,
             });
@@ -121,6 +129,16 @@ var Home = React.createClass({
             <View style={styles.container}>
                 <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10}}>
                     正在读取中...
+                </Text>
+            </View>
+        );
+    },
+
+    renderNoItemView: function () {
+        return (
+            <View style={styles.container}>
+                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10}}>
+                    什么都没有哟...
                 </Text>
             </View>
         );
@@ -184,12 +202,15 @@ var Home = React.createClass({
         });
         this._onLoadNext();
         PAGE += 1;
-        this.fetchData(PAGE);
+        this.fetchData(PAGE, this.state.keyWord);
     },
 
     render: function () {
-        if (!this.state.items || this.state.items.length == 0) {
+        if (!this.state.items || this.state.items == undefined) {
             return this.renderLoadingView();
+        }
+        else if (this.state.items.length == 0) {
+            return this.renderNoItemView();
         }
         return (
             <View style={{ flex: 1}}>

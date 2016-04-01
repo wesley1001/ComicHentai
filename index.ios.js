@@ -148,7 +148,7 @@ var ComicHentai = React.createClass({
         }
         this.refs.nav.push({
             component: Search,
-            title: 'Search'
+            title: '搜索页'
         });
     },
 
