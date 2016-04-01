@@ -9,6 +9,7 @@ var Message = {
         app.post('/message/get', this.getMessage);
         app.post('/message/add', this.addMessage);
         app.post('/comic/get', this.getComic);
+        app.post('/comic/search', this.searchComic)
     },
 
     //获取公告消息
@@ -29,6 +30,67 @@ var Message = {
                         data: obj
                     });
                 } catch (e) {
+                    return res.send({
+                        status: 0,
+                        err: e
+                    });
+                }
+            }
+            return res.send({
+                status: 0,
+                err: err
+            });
+        });
+    },
+
+    /**
+     * 搜素漫画信息
+     * @param req
+     * @param res
+     * @returns {*}
+     */
+    searchComic: function (req, res) {
+        var key = req.param('key');
+        var page = req.param('page');
+        var title = req.param('title');
+        if (page == null || page == undefined) {
+            page = 0;
+        }
+        if (key !== util.getKey()) {
+            return res.send({
+                status: 0,
+                data: '使用了没有鉴权的key'
+            });
+        }
+
+        if (title == undefined) {
+            title = ' ';
+        }
+        console.log("搜素关键字为:" + title);
+        fs.readFile(TOTAL_PATH, function (err, data) {
+            if (!err) {
+                try {
+                    var count = 0;
+                    var obj = JSON.parse(data);
+                    var resultList = [];
+                    for (var i = 0; i < obj.length; i++) {
+                        if (obj[i].comicTitle.indexOf(title) != -1) {
+                            console.log(obj[i]);
+                            count++;
+                            resultList.push(obj[i]);
+                            if (count > 50) {
+                                break;
+                            }
+                        }
+                    }
+                    console.log("返回结果为");
+                    console.log(resultList);
+                    return res.send({
+                        status: 1,
+                        data: resultList
+                    });
+                } catch (e) {
+                    console.log(e);
                     return res.send({
                         status: 0,
                         err: e

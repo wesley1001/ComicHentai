@@ -74,6 +74,10 @@ var Home = React.createClass({
     getInitialState: function () {
         //减去paddingLeft && paddingRight && space
         var width = Math.floor(Util.size.width);
+        if (this.props.requestUrl != undefined) {
+            console.log("请求变更为" + this.props.requestUrl);
+            REQUEST_COMIC_URL = this.props.requestUrl;
+        }
         return {
             isLoadingTail: false,
             isRefreshing: false,
