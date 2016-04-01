@@ -24,6 +24,13 @@ var REQUEST_COMIC_URL = Service.host + Service.getComic;
 var PAGE = 0;
 var Home = React.createClass({
 
+
+    clearData: function () {
+        this.setState({
+            items: []
+        });
+    },
+
     fetchData: function (page) {
         if (page == null || page == undefined) {
             page = 0;
@@ -81,6 +88,7 @@ var Home = React.createClass({
         this.setState({isRefreshing: true});
         setTimeout(() => {
             // prepend 10 items
+            this.clearData();
             this.fetchData(0);
             this.setState({
                 isRefreshing: false,
@@ -91,7 +99,7 @@ var Home = React.createClass({
     renderLoadingView: function () {
         return (
             <View style={styles.container}>
-                <Text>
+                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:12,marginTop:10}}>
                     正在读取中...
                 </Text>
             </View>

@@ -43,16 +43,21 @@ var Detail = React.createClass({
                 </View>
                 <View key={'info' + this.props.key} style={[styles.row,{marginTop:5}]}>
                     <View>
-                        <Text style={[styles.noColor,{marginLeft:1}]}>
+                        <Text style={[styles.noColor,{marginLeft:5}]}>
                             {"漫画标签:" + comic.comicTag}
                         </Text>
-                        <Text style={[styles.unColor,{marginLeft:1}]}>
+                        <Text style={[styles.unColor,{marginLeft:5}]}>
                             {"漫画类别:" + comic.comicCategory}
                         </Text>
-                        <Text style={[styles.unColor,{marginLeft:1}]}>
+                        <Text style={[styles.unColor,{marginLeft:5}]}>
                             {"漫画描述:" + comic.comicTitle}
                         </Text>
                     </View>
+                </View>
+                <View style={{height:Util.size.height/2,marginTop:5}}>
+                    <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:12,marginTop:10}}>
+                        即将开放的评论区
+                    </Text>
                 </View>
             </ScrollView>
         );
@@ -81,7 +86,7 @@ var styles = StyleSheet.create({
         justifyContent: 'center',
     },
     noColor: {
-        width:Util.size.width,
+        width: Util.size.width,
         alignSelf: 'stretch',
         fontSize: 12,
         marginLeft: 5
@@ -91,7 +96,7 @@ var styles = StyleSheet.create({
         marginTop: 2,
     },
     unColor: {
-        width:Util.size.width,
+        width: Util.size.width,
         alignSelf: 'stretch',
         color: '#575656',
         marginTop: 8,
