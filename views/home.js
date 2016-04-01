@@ -13,7 +13,9 @@ var {
     View ,
     ScrollView,
     StyleSheet,
+    TextInput,
     TimerMixin,
+    AlertIOS,
     AsyncStorage,
     ListView,
     RefreshControl,
@@ -58,7 +60,8 @@ var Home = React.createClass({
                         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
                         that.setState({
                             items: that.state.items.concat(responseText.data),
-                            dataSource: ds.cloneWithRows(that.state.items.concat(responseText.data))
+                            dataSource: ds.cloneWithRows(that.state.items.concat(responseText.data)),
+                            loadNext: false
                         });
                     }).done();
             } else {
@@ -72,15 +75,22 @@ var Home = React.createClass({
         //减去paddingLeft && paddingRight && space
         var width = Math.floor(Util.size.width);
         return {
+            isLoadingTail: false,
             isRefreshing: false,
             width: width,
             items: [],
             thumbIndex: 0,
+            loadNext: false
         };
     },
 
     componentWillMount: function () {
         this.fetchData(0);
+
+    },
+
+    componentDidMount: function () {
+        console.log("navigator undefined ? home =[" + this.props.navigator == undefined + "]");
     },
 
     _onRefresh() {
@@ -96,11 +106,30 @@ var Home = React.createClass({
         }, 1000);
     },
 
+    _onLoadNext: function () {
+        this.setState({
+            loadNext: true
+        })
+    },
+
     renderLoadingView: function () {
         return (
             <View style={styles.container}>
-                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:12,marginTop:10}}>
+                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10}}>
                     正在读取中...
+                </Text>
+            </View>
+        );
+    },
+
+    renderLoadingNextView: function () {
+        if (!this.state.loadNext) {
+            return;
+        }
+        return (
+            <View style={{flex:1,height:12}}>
+                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:0}}>
+                    载入中...
                 </Text>
             </View>
         );
@@ -128,17 +157,28 @@ var Home = React.createClass({
 
     renderComic: function () {
         return (
-            <ListView style={styles.container}
-                      onEndReached={this.renderNextPage}
-                      dataSource={this.state.dataSource}
-                      renderRow={(rowData) => this.renderRow(rowData)}
-                      refreshControl={this.renderRefresh()}
-            />
+            <ListView
+                onEndReached={this.renderNextPage}
+                contentLength={25}
+                dataSource={this.state.dataSource}
+                renderRow={(rowData) => this.renderRow(rowData)}
+                refreshControl={this.renderRefresh()}/>
         );
     },
 
-    renderNextPage: function () {
-        console.log("nextPage");
+    renderNextPage: function (e) {
+        console.log('onEndReached', this.state.isLoadingTail);
+        if (this.state.isLoadingTail) {
+            // We're already fetching
+            return;
+        }
+        this.setState({
+            isLoadingTail: true
+        });
+        this.setState({
+            isLoadingTail: false
+        });
+        this._onLoadNext();
         PAGE += 1;
         this.fetchData(PAGE);
     },
@@ -147,7 +187,16 @@ var Home = React.createClass({
         if (!this.state.items || this.state.items.length == 0) {
             return this.renderLoadingView();
         }
-        return this.renderComic()
+        return (
+            <View style={{ flex: 1}}>
+                <View style={{ flex: 1,marginBottom:80}}>
+                    {this.renderComic()}
+                </View>
+                <View>
+                    {this.renderLoadingNextView()}
+                </View>
+            </View>
+        );
     }
 
 
@@ -157,6 +206,15 @@ var styles = StyleSheet.create({
     container: {
         flex: 1,
         marginBottom: 80,
+    },
+    search: {
+        fontSize: 14,
+        height: 20,
+        borderWidth: Util.pixel,
+        borderColor: '#ccc',
+        paddingLeft: 10,
+        borderRadius: 6,
+        backgroundColor: '#fff',
     },
     itemRow: {
         flexDirection: 'row',
