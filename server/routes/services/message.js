@@ -78,7 +78,7 @@ var Message = {
                             console.log(obj[i]);
                             count++;
                             resultList.push(obj[i]);
-                            if (count > 50) {
+                            if (count > 10) {
                                 break;
                             }
                         }
