@@ -170,7 +170,7 @@ var Search = React.createClass({
         }
         return (
             <View style={styles.container}>
-                <View style={[{flex:1},{height:35}]}>
+                <View>
                     <TextInput style={styles.search} placeholder="搜索漫画/标签/作者...." clearButtonMode="always"
                                autoCapitalize="none" autoCorrect={false} onChangeText={(val)=>this.autoComplete(val)}
                                onSubmitEditing={(val)=>this.submitKeyWord(val.nativeEvent.text)}/>
