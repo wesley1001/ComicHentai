@@ -47,12 +47,12 @@ var Item = React.createClass({
             key: key,
             title: title,
             id: id
-        }, function (data) {
+        }, function (response) {
             nav.push({
                 title: title,
                 component: Detail,
                 passProps: {
-                    data: data
+                    data: response.data
                 }
             });
         }.bind(this));

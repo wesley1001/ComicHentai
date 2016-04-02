@@ -33,6 +33,9 @@ var Home = React.createClass({
     },
 
     fetchData: function (page, keyWord) {
+        if (!this.state.canLoadNext) {
+            return;
+        }
         if (page == null || page == undefined) {
             page = 0;
         }
@@ -84,10 +87,13 @@ var Home = React.createClass({
             keyWord = this.props.keyWord;
         }
         return {
+            canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh,
+            canLoadNext: this.props.canLoadNext == undefined ? true : this.props.canLoadNext,
             isLoadingTail: false, //是否还在读取
-            isRefreshing: false, //是否在刷新
+            isRefreshing: false, //是否在刷新是否还在读取
             width: width, //当前宽度
-            items: [], //漫画列表
+            items: this.props.items == undefined ? [] : this.props.items, //漫画列表
+            dataSource: this.props.items == undefined ? null : new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.props.items),
             loadNext: false, //是否载入下一页
             keyWord: keyWord //搜索关键字
         };
@@ -100,6 +106,9 @@ var Home = React.createClass({
 
 
     _onRefresh() {
+        if (!this.state.canRefresh) {
+            return;
+        }
         PAGE = 0;
         this.setState({isRefreshing: true});
         setTimeout(() => {
@@ -172,18 +181,32 @@ var Home = React.createClass({
     },
 
     renderComic: function () {
-        return (
-            <ListView
-                onEndReached={this.renderNextPage}
-                contentLength={25}
-                dataSource={this.state.dataSource}
-                renderRow={(rowData) => this.renderRow(rowData)}
-                refreshControl={this.renderRefresh()}/>
-        );
+        if (this.state.canRefresh) {
+            return (
+                <ListView
+                    onEndReached={this.renderNextPage}
+                    contentLength={25}
+                    dataSource={this.state.dataSource}
+                    renderRow={(rowData) => this.renderRow(rowData)}
+                    refreshControl={this.renderRefresh()}/>
+            );
+        } else {
+            return (
+                <ListView
+                    onEndReached={this.renderNextPage}
+                    contentLength={25}
+                    dataSource={this.state.dataSource}
+                    renderRow={(rowData) => this.renderRow(rowData)}
+                />
+            );
+        }
     },
 
     renderNextPage: function (e) {
         console.log('onEndReached', this.state.isLoadingTail);
+        if (!this.state.canLoadNext) {
+            return;
+        }
         if (this.state.isLoadingTail) {
             // We're already fetching
             return;

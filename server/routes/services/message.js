@@ -4,7 +4,7 @@ var MESSAGE_PATH = './database/message.json';
 var USER_PATH = './database/user.json';
 var COMIC_PATH = './database/comic.json';
 var COMIC_TOTAL_PATH = './database/total.json';
-var SPECIAL_TOTAL_PATH = './database/speial_total.json';
+var SPECIAL_TOTAL_PATH = './database/special_total.json';
 var Message = {
     init: function (app) {
         app.post('/message/get', this.getMessage);
@@ -179,6 +179,7 @@ var Message = {
         }
     },
 
+
     /**
      * 获取专题信息
      * @param req
@@ -199,34 +200,44 @@ var Message = {
                 data: '使用了没有鉴权的key'
             });
         }
-
         if (specialId != null && specialId != undefined) {
-            console.log("专题ID:" + specialId);
-            fs.readFile(SPECIAL_TOTAL_PATH, function (err, data) {
-                if (!err) {
-                    try {
-                        var obj = JSON.parse(data);
-                        for (var i = 0; i < obj.length; i++) {
-                            if (obj[i].id == specialId) {
-                                console.log(obj[i].comicId);
-                                return res.send({
-                                    status: 1,
-                                    data: obj[i]
-                                });
+            try {
+                var specialJson = JSON.parse(fs.readFileSync(SPECIAL_TOTAL_PATH));
+                var comicJson = JSON.parse(fs.readFileSync(COMIC_TOTAL_PATH));
+                var result = [];
+                var count = 0;
+
+                for (var i = 0; i < specialJson.length; i++) {
+                    if (specialId == specialJson[i].id) {
+                        var comicIdList = specialJson[i].comicIdList;
+                        if(comicIdList == undefined){
+                            comicIdList = []
+                        }
+                        for(var k = 0 ; k < 25 ; k++){
+                            var randomIndex = Math.floor(Math.random() * (comicJson.length));
+                            comicIdList.push(comicJson[randomIndex].comicId);
+                        }
+                        for (var j = 0; j < comicJson.length; j++) {
+                            if (comicIdList.indexOf(comicJson[j].comicId) != -1) {
+                                count++;
+                                result.push(comicJson[j]);
+                                if (count >= 10) {
+                                    break;
+                                }
                             }
                         }
-                    } catch (e) {
-                        return res.send({
-                            status: 0,
-                            err: e
-                        });
                     }
                 }
+                console.log(result);
                 return res.send({
-                    status: 0,
-                    err: err
+                    status: 1,
+                    data: result
                 });
-            });
+            }
+            catch (e) {
+                console.log(e);
+            }
+
         } else {
             console.log("当前为第" + page + "页");
             fs.readFile(path[page % 4], function (err, data) {
