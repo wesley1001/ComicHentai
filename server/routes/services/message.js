@@ -155,7 +155,7 @@ var Message = {
             });
         } else {
             console.log("当前为第" + page + "页")
-            fs.readFile(path[page % 3], function (err, data) {
+            fs.readFile(path[page % 4], function (err, data) {
                 if (!err) {
                     try {
                         var obj = JSON.parse(data);
@@ -188,8 +188,8 @@ var Message = {
     getSpecial: function (req, res) {
         var key = req.param('key');
         var page = req.param('page');
-        var specialId = req.param('specialId');
-        var path = ['./database/special.json', './database/special1.json', './database/special2.json', './database/special3.json']
+        var specialId = req.param('id');
+        var path = ['./database/special.json', './database/special1.json', './database/special2.json', './database/special3.json'];
         if (page == null || page == undefined) {
             page = 0;
         }
@@ -208,7 +208,7 @@ var Message = {
                         var obj = JSON.parse(data);
                         for (var i = 0; i < obj.length; i++) {
                             if (obj[i].id == specialId) {
-                                console.log(obj[i]);
+                                console.log(obj[i].comicId);
                                 return res.send({
                                     status: 1,
                                     data: obj[i]
@@ -228,8 +228,8 @@ var Message = {
                 });
             });
         } else {
-            console.log("当前为第" + page + "页")
-            fs.readFile(path[page % 3], function (err, data) {
+            console.log("当前为第" + page + "页");
+            fs.readFile(path[page % 4], function (err, data) {
                 if (!err) {
                     try {
                         var obj = JSON.parse(data);

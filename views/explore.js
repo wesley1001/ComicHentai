@@ -23,7 +23,7 @@ var {
     TouchableHighlight,
     } = React;
 
-var REQUEST_SPECIAL_URL = Service.host + Service.getMessage;
+var REQUEST_SPECIAL_URL = Service.host + Service.getSpecial;
 var PAGE = 0;
 var Explore = React.createClass({
 
@@ -64,12 +64,12 @@ var Explore = React.createClass({
                         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
                         //在这里将数据处理下,读取老数据,并让其每4个Object放在一行
                         var data = that.state.items.concat(responseText.data);
-                        var rowCount = (data.length / 4) + 1;
+                        var rowCount = (data.length / 3) + 1;
                         var totalData = [];
                         for (var i = 0; i < rowCount; i++) {
                             var rowData = [];
-                            for (var j = 0; j < 4; j++) {
-                                var index = i * 4 + j;
+                            for (var j = 0; j < 3; j++) {
+                                var index = i * 3 + j;
                                 if (index >= data.length) {
                                     break;
                                 }
@@ -79,7 +79,7 @@ var Explore = React.createClass({
                         }
                         //添加查询出来的数据
                         that.setState({
-                            items: totalData,
+                            items: that.state.items.concat(responseText.data),
                             dataSource: ds.cloneWithRows(totalData),
                             loadNext: false
                         });
@@ -97,7 +97,7 @@ var Explore = React.createClass({
      */
     getInitialState: function () {
         //减去paddingLeft && paddingRight && space
-        var width = Math.floor(((Util.size.width - 20) - 50) / 4);
+        var width = Math.floor(((Util.size.width - 40)) / 3);
         var keyWord = null;
         if (this.props.requestUrl != undefined) {
             console.log("请求变更为" + this.props.requestUrl);
@@ -201,19 +201,21 @@ var Explore = React.createClass({
      */
     renderRow: function (rowData) {
         var itemList = [];
+        var colors = ['#E20079', '#FFD602', '#25BFFE', '#F90000', '#04E246', '#04E246', '#00AFC9'];
         for (var index = 0; index < rowData.length; index++) {
             itemList.push(
                 <Item
-                    key={items[index].id}
-                    title={items[index].title}
-                    coverImage={items[index].coverImage}
+                    key={rowData[index].id}
+                    id={rowData[index].id}
+                    title={rowData[index].title}
+                    coverImage={rowData[index].coverImage}
                     width={this.state.width}
-                    color={items[index].color}
+                    color={colors[index].color}
                     nav={this.props.navigator}
                 />
             );
         }
-        return (<View style={styles.itemRow}>
+        return (<View style={styles.itemRow} key={Math.random()+"_key"}>
             {itemList}
         </View>);
     },
@@ -282,7 +284,7 @@ var Explore = React.createClass({
         }
         return (
             <View style={{ flex: 1}}>
-                <View style={{ flex: 1,marginBottom:80}}>
+                <View style={{ flex: 1}}>
                     {this.renderSpecial()}
                 </View>
                 <View>
@@ -299,15 +301,6 @@ var styles = StyleSheet.create({
     container: {
         flex: 1,
         marginBottom: 80,
-    },
-    search: {
-        fontSize: 14,
-        height: 20,
-        borderWidth: Util.pixel,
-        borderColor: '#ccc',
-        paddingLeft: 10,
-        borderRadius: 6,
-        backgroundColor: '#fff',
     },
     itemRow: {
         flexDirection: 'row',
