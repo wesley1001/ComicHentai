@@ -83,25 +83,19 @@ var Home = React.createClass({
             REQUEST_COMIC_URL = this.props.requestUrl;
             keyWord = this.props.keyWord;
         }
-        console.log("关键词为" + this.props.keyWord);
-        console.log("重新渲染");
         return {
-            isLoadingTail: false,
-            isRefreshing: false,
-            width: width,
-            items: [],
-            thumbIndex: 0,
-            loadNext: false,
-            keyWord: keyWord
+            isLoadingTail: false, //是否还在读取
+            isRefreshing: false, //是否在刷新
+            width: width, //当前宽度
+            items: [], //漫画列表
+            loadNext: false, //是否载入下一页
+            keyWord: keyWord //搜索关键字
         };
     },
 
     componentWillMount: function () {
-        console.log("关键词为" + this.state.keyWord);
-        console.log("二次渲染");
         this.setState({keyWord: this.props.keyWord});
         this.fetchData(0, this.state.keyWord);
-
     },
 
 
