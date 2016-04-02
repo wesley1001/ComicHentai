@@ -3,13 +3,16 @@ var util = require('./../util');
 var MESSAGE_PATH = './database/message.json';
 var USER_PATH = './database/user.json';
 var COMIC_PATH = './database/comic.json';
-var TOTAL_PATH = './database/total.json';
+var COMIC_TOTAL_PATH = './database/total.json';
+var SPECIAL_TOTAL_PATH = './database/speial_total.json';
 var Message = {
     init: function (app) {
         app.post('/message/get', this.getMessage);
         app.post('/message/add', this.addMessage);
         app.post('/comic/get', this.getComic);
-        app.post('/comic/search', this.searchComic)
+        app.post('/comic/search', this.searchComic);
+        app.post('/special/get', this.getSpecial);
+        app.post('/special/search', this.searchSpecial);
     },
 
     //获取公告消息
@@ -67,7 +70,7 @@ var Message = {
             keyWord = ' ';
         }
         console.log("搜素关键字为:" + keyWord);
-        fs.readFile(TOTAL_PATH, function (err, data) {
+        fs.readFile(COMIC_TOTAL_PATH, function (err, data) {
             if (!err) {
                 try {
                     var count = 0;
@@ -102,7 +105,12 @@ var Message = {
         });
     },
 
-    //获取漫画信息
+    /**
+     * 查询漫画信息
+     * @param req
+     * @param res
+     * @returns {*}
+     */
     getComic: function (req, res) {
         var key = req.param('key');
         var page = req.param('page');
@@ -120,7 +128,7 @@ var Message = {
 
         if (comicId != null && comicId != undefined) {
             console.log("漫画ID:" + comicId);
-            fs.readFile(TOTAL_PATH, function (err, data) {
+            fs.readFile(COMIC_TOTAL_PATH, function (err, data) {
                 if (!err) {
                     try {
                         var obj = JSON.parse(data);
@@ -170,6 +178,139 @@ var Message = {
             });
         }
     },
+
+    /**
+     * 获取专题信息
+     * @param req
+     * @param res
+     * @returns {*}
+     */
+    getSpecial: function (req, res) {
+        var key = req.param('key');
+        var page = req.param('page');
+        var specialId = req.param('specialId');
+        var path = ['./database/special.json', './database/special1.json', './database/special2.json', './database/special3.json']
+        if (page == null || page == undefined) {
+            page = 0;
+        }
+        if (key !== util.getKey()) {
+            return res.send({
+                status: 0,
+                data: '使用了没有鉴权的key'
+            });
+        }
+
+        if (specialId != null && specialId != undefined) {
+            console.log("专题ID:" + specialId);
+            fs.readFile(SPECIAL_TOTAL_PATH, function (err, data) {
+                if (!err) {
+                    try {
+                        var obj = JSON.parse(data);
+                        for (var i = 0; i < obj.length; i++) {
+                            if (obj[i].id == specialId) {
+                                console.log(obj[i]);
+                                return res.send({
+                                    status: 1,
+                                    data: obj[i]
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        return res.send({
+                            status: 0,
+                            err: e
+                        });
+                    }
+                }
+                return res.send({
+                    status: 0,
+                    err: err
+                });
+            });
+        } else {
+            console.log("当前为第" + page + "页")
+            fs.readFile(path[page % 3], function (err, data) {
+                if (!err) {
+                    try {
+                        var obj = JSON.parse(data);
+                        console.log(obj);
+                        return res.send({
+                            status: 1,
+                            data: obj
+                        });
+                    } catch (e) {
+                        return res.send({
+                            status: 0,
+                            err: e
+                        });
+                    }
+                }
+                return res.send({
+                    status: 0,
+                    err: err
+                });
+            });
+        }
+    },
+    /**
+     * 搜素专题信息
+     * @param req
+     * @param res
+     * @returns {*}
+     */
+    searchSpecial: function (req, res) {
+        var key = req.param('key');
+        var page = req.param('page');
+        var keyWord = req.param('keyWord');
+        if (page == null || page == undefined) {
+            page = 0;
+        }
+        if (key !== util.getKey()) {
+            return res.send({
+                status: 0,
+                data: '使用了没有鉴权的key'
+            });
+        }
+
+        if (keyWord == undefined) {
+            keyWord = ' ';
+        }
+        console.log("搜素关键字为:" + keyWord);
+        fs.readFile(COMIC_TOTAL_PATH, function (err, data) {
+            if (!err) {
+                try {
+                    var count = 0;
+                    var obj = JSON.parse(data);
+                    var resultList = [];
+                    for (var i = 0; i < obj.length; i++) {
+                        if (obj[i].comicTitle.indexOf(keyWord) != -1) {
+                            count++;
+                            resultList.push(obj[i]);
+                            if (count > 10) {
+                                break;
+                            }
+                        }
+                    }
+                    console.log("个数为" + count);
+                    return res.send({
+                        status: 1,
+                        data: resultList
+                    });
+                } catch (e) {
+                    console.log(e);
+                    return res.send({
+                        status: 0,
+                        err: e
+                    });
+                }
+            }
+            return res.send({
+                status: 0,
+                err: err
+            });
+        });
+    },
+
 
     //增加公告消息
     addMessage: function (req, res) {

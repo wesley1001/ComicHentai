@@ -22,9 +22,10 @@ var Item = React.createClass({
         return (
             <TouchableHighlight underlayColor="#fff" onPress={this._loadPage}>
                 <View style={[styles.itemBlock, size]}>
-                    <View>
-                        <Text style={styles.font18}>封面</Text>
-                    </View>
+                    <Image
+                        style={[styles.text]}
+                        source={{uri: this.prop.coverImage}}
+                    />
                     <View>
                         <Text style={styles.font10}>{this.props.title}</Text>
                     </View>
@@ -61,6 +62,14 @@ var styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 5,
         marginLeft: 10,
+    },
+    text: {
+        width: Math.floor(((Util.size.width - 20) - 50) / 4),
+        height: Math.floor(((Util.size.height - 20) - 50) / 4),
+        borderRadius: 4,
+        marginLeft: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     font18: {
         color: '#fff',

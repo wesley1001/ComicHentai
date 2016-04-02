@@ -6,6 +6,8 @@ var Service = {
     getUserSpecial: '/user/getSpecial',
     createUser: '/user/create',
     getMessage: '/message/get',
+    getSpecial: '/special/get',
+    searchSpecial: '/special/search',
     getComic: '/comic/get',
     searchComic: '/comic/search',
     addMessage: '/message/add',
