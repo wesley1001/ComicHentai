@@ -77,6 +77,10 @@ var Home = React.createClass({
     },
 
 
+    /**
+     * 初始化状态
+     * @returns {{canRefresh: boolean, canLoadNext: boolean, isLoadingTail: boolean, isRefreshing: boolean, width: number, items: *, dataSource: null, loadNext: boolean, keyWord: *}}
+     */
     getInitialState: function () {
         //减去paddingLeft && paddingRight && space
         var width = Math.floor(Util.size.width);

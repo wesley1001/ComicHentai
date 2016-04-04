@@ -112,7 +112,7 @@ var ComicHentai = React.createClass({
             data = this.state.data;
         }
         var initialRoute;
-        if (title == "漫画绅士") {
+        if (title == "漫画绅士" || title === '探索') {
             initialRoute = {
                 component: component,
                 title: title,

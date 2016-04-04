@@ -21,28 +21,46 @@ var {
     } = React;
 
 var REQUEST_COMIC_URL = Service.host + Service.searchComic;
+var REQUEST_SPECAIL_URL = Service.host + Service.searchSpecial;
 var PAGE = 0;
 var Search = React.createClass({
 
     getInitialState: function () {
+        //查询类型
+        var type = this.props.type;
         return ({
             hasKeyWord: false,
             lastEditTime: 0,
-            searchHistory: null
+            searchComicHistory: [],
+            searchSpecialHistory: [],
+            type: type
         })
     },
 
     componentWillMount: function () {
         var that = this;
-        AsyncStorage.getItem("searchHistory", function (err, searchHistory) {
-            if (!searchHistory) {
-                searchHistory = "[]";
-            }
-            searchHistory = JSON.parse(searchHistory);
-            that.setState({
-                searchHistory: searchHistory
-            });
-        }).done();
+        if (this.state.type == "comic") {
+            AsyncStorage.getItem("searchComicHistory", function (err, searchHistory) {
+                if (!searchHistory) {
+                    searchHistory = "[]";
+                }
+                searchHistory = JSON.parse(searchHistory);
+                that.setState({
+                    searchComicHistory: searchHistory
+                });
+            }).done();
+        }
+        if (this.state.type == "special") {
+            AsyncStorage.getItem("searchSpecialHistory", function (err, searchHistory) {
+                if (!searchHistory) {
+                    searchHistory = "[]";
+                }
+                searchHistory = JSON.parse(searchHistory);
+                that.setState({
+                    searchSpecialHistory: searchHistory
+                });
+            }).done();
+        }
     },
 
     autoComplete: function (val) {
@@ -86,29 +104,56 @@ var Search = React.createClass({
                 hasKeyWord: false
             })
         }
-        AsyncStorage.getItem("searchHistory", function (err, searchHistory) {
-            if (!searchHistory) {
-                searchHistory = "[]";
-            }
-            searchHistory = JSON.parse(searchHistory);
-            searchHistory.push(keyWord);
-            AsyncStorage.setItem("searchHistory", JSON.stringify(searchHistory)).done();
-            that.setState({
-                hasKeyWord: false
-            });
-            that.setState({
-                searchHistory: searchHistory,
-                keyWord: keyWord,
-                lastEditTime: 0,
-                hasKeyWord: true
-            });
-        }).done();
+        if (this.state.type == "comic") {
+            AsyncStorage.getItem("searchComicHistory", function (err, searchHistory) {
+                if (!searchHistory) {
+                    searchHistory = "[]";
+                }
+                searchHistory = JSON.parse(searchHistory);
+                searchHistory.push(keyWord);
+                AsyncStorage.setItem("searchComicHistory", JSON.stringify(searchHistory)).done();
+                that.setState({
+                    hasKeyWord: false
+                });
+                that.setState({
+                    searchComicHistory: searchHistory,
+                    keyWord: keyWord,
+                    lastEditTime: 0,
+                    hasKeyWord: true
+                });
+            }).done();
+        }
+        if (this.state.type == "special") {
+            AsyncStorage.getItem("searchSpecialHistory", function (err, searchHistory) {
+                if (!searchHistory) {
+                    searchHistory = "[]";
+                }
+                searchHistory = JSON.parse(searchHistory);
+                searchHistory.push(keyWord);
+                AsyncStorage.setItem("searchSpecialHistory", JSON.stringify(searchHistory)).done();
+                that.setState({
+                    hasKeyWord: false
+                });
+                that.setState({
+                    searchSpecialHistory: searchHistory,
+                    keyWord: keyWord,
+                    lastEditTime: 0,
+                    hasKeyWord: true
+                });
+            }).done();
+        }
 
 
     },
 
     renderHistory: function () {
-        var history = this.state.searchHistory;
+        var history = []
+        if (this.state.type == "comic") {
+            history = this.state.searchComicHistory;
+        }
+        if (this.state.type == "special") {
+            history = this.state.searchSpecialHistory;
+        }
         if (!history || history == "[]" || history == []) {
             return (<Text style={styles.unColor}>无历史记录</Text>);
         }
@@ -147,10 +192,17 @@ var Search = React.createClass({
     },
 
     renderSearchResult: function () {
+        var request_url = undefined;
+        if (this.state.type == "comic") {
+            request_url = REQUEST_COMIC_URL;
+        }
+        if (this.state.type == "special") {
+            request_url = REQUEST_SPECAIL_URL;
+        }
         return (<View style={{flex: 1,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
             <Home
                 navigator={this.props.navigator}
-                requestUrl={REQUEST_COMIC_URL}
+                requestUrl={request_url}
                 keyWord={this.state.keyWord}
             />
         </View>);
@@ -161,10 +213,17 @@ var Search = React.createClass({
         if (this.state.hasKeyWord) {
             content = this.renderSearchResult();
         }
+        var placeHolder = "搜索漫画/标签/作者....";
+        if (this.state.type == "comic") {
+            placeHolder = "搜索漫画/标签/作者....";
+        }
+        if (this.state.type == "special") {
+            placeHolder = "搜索专题....";
+        }
         return (
             <View style={styles.container}>
                 <View>
-                    <TextInput style={styles.search} placeholder="搜索漫画/标签/作者...." clearButtonMode="always"
+                    <TextInput style={styles.search} placeholder={placeHolder} clearButtonMode="always"
                                autoCapitalize="none" autoCorrect={false} onChangeText={(val)=>this.autoComplete(val)}
                                onSubmitEditing={(val)=>this.submitKeyWord(val.nativeEvent.text)}/>
                 </View>
