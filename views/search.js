@@ -8,6 +8,7 @@ var Item = require('./message/item');
 var Detail = require('./message/detail');
 var Service = require('./service');
 var Home = require('./home');
+var Explore = require('./explore');
 
 var {
     View,
@@ -28,6 +29,7 @@ var Search = React.createClass({
     getInitialState: function () {
         //查询类型
         var type = this.props.type;
+        console.log(type);
         return ({
             hasKeyWord: false,
             lastEditTime: 0,
@@ -195,17 +197,26 @@ var Search = React.createClass({
         var request_url = undefined;
         if (this.state.type == "comic") {
             request_url = REQUEST_COMIC_URL;
+            return (<View style={{flex: 1,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
+                <Home
+                    navigator={this.props.navigator}
+                    requestUrl={request_url}
+                    keyWord={this.state.keyWord}
+                />
+            </View>);
         }
         if (this.state.type == "special") {
             request_url = REQUEST_SPECAIL_URL;
+            return (<View style={{flex: 1,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
+                <Explore
+                    navigator={this.props.navigator}
+                    requestUrl={request_url}
+                    keyWord={this.state.keyWord}
+                />
+            </View>);
         }
-        return (<View style={{flex: 1,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
-            <Home
-                navigator={this.props.navigator}
-                requestUrl={request_url}
-                keyWord={this.state.keyWord}
-            />
-        </View>);
+
+
     },
 
     render: function () {
@@ -213,7 +224,7 @@ var Search = React.createClass({
         if (this.state.hasKeyWord) {
             content = this.renderSearchResult();
         }
-        var placeHolder = "搜索漫画/标签/作者....";
+        var placeHolder = "";
         if (this.state.type == "comic") {
             placeHolder = "搜索漫画/标签/作者....";
         }

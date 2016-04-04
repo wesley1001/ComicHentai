@@ -287,14 +287,14 @@ var Message = {
             keyWord = ' ';
         }
         console.log("搜素关键字为:" + keyWord);
-        fs.readFile(COMIC_TOTAL_PATH, function (err, data) {
+        fs.readFile(SPECIAL_TOTAL_PATH, function (err, data) {
             if (!err) {
                 try {
                     var count = 0;
                     var obj = JSON.parse(data);
                     var resultList = [];
                     for (var i = 0; i < obj.length; i++) {
-                        if (obj[i].comicTitle.indexOf(keyWord) != -1) {
+                        if (obj[i].title.indexOf(keyWord) != -1) {
                             count++;
                             resultList.push(obj[i]);
                             if (count > 10) {

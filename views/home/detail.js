@@ -41,7 +41,7 @@ var Detail = React.createClass({
                         </Text>
                     </View>
                 </View>
-                <View key={'info' + this.props.key} style={[styles.row,{marginTop:5}]}>
+                <ScrollView key={'info' + this.props.key} style={[styles.row,{marginTop:5,height:150}]}>
                     <View>
                         <Text style={[styles.noColor,{marginLeft:5}]}>
                             {"漫画标签:" + comic.comicTag}
@@ -53,7 +53,7 @@ var Detail = React.createClass({
                             {"漫画描述:" + comic.comicTitle}
                         </Text>
                     </View>
-                </View>
+                </ScrollView>
                 <View style={{height:Util.size.height/2,marginTop:5}}>
                     <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:12,marginTop:10}}>
                         即将开放的评论区
@@ -75,7 +75,6 @@ var styles = StyleSheet.create({
         borderBottomColor: '#ccc',
         flexDirection: 'row',
         alignSelf: 'stretch',
-        alignItems: 'center'
     },
     img: {
         width: 100,

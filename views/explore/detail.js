@@ -28,6 +28,7 @@ var Detail = React.createClass({
                 items={this.props.data}
                 canRefresh={false}
                 canLoadNext={false}
+                canFilter={true}
             />
         </View>);
     }
@@ -63,6 +64,13 @@ var styles = StyleSheet.create({
         color: '#575656',
         marginTop: 8,
         fontSize: 12,
+    },search: {
+        height: 35,
+        borderWidth: Util.pixel,
+        borderColor: '#ccc',
+        paddingLeft: 10,
+        borderRadius: 6,
+        backgroundColor: '#fff',
     }
 });
 

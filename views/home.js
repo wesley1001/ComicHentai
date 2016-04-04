@@ -91,8 +91,10 @@ var Home = React.createClass({
             keyWord = this.props.keyWord;
         }
         return {
-            canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh,
-            canLoadNext: this.props.canLoadNext == undefined ? true : this.props.canLoadNext,
+            canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh, //可以刷新
+            canLoadNext: this.props.canLoadNext == undefined ? true : this.props.canLoadNext, //可以载入下一页
+            canFilter: this.props.canFilter == undefined ? false : this.props.canFilter,//可以过滤
+            beforeFilterItems: null, //过滤前的临时数据,初始为null,如果什么源数据都没有将会变成[]
             isLoadingTail: false, //是否还在读取
             isRefreshing: false, //是否在刷新是否还在读取
             width: width, //当前宽度
@@ -129,6 +131,42 @@ var Home = React.createClass({
         this.setState({
             loadNext: true
         })
+    },
+
+    _onFilter: function (val) {
+        console.log("值为" + val);
+        //先保存一发初始值
+        if (this.state.beforeFilterItems == null) {
+            console.log("过滤前的值为空,需要保存");
+            this.setState({
+                beforeFilterItems: this.state.items,
+
+            });
+        }
+        //如果关键词清空状态下,读取原始数据
+        if (val == undefined || val == null || val == "") {
+            this.setState({
+                items: this.state.beforeFilterItems,
+                dataSource: this.state.dataSource.cloneWithRows(this.state.beforeFilterItems),
+            });
+        }
+        //否则过滤
+        else {
+            var filterData = [];
+            for (var i = 0; i < this.state.beforeFilterItems.length; i++) {
+                if (this.state.beforeFilterItems[i].comicTitle.indexOf(val) != -1) {
+                    filterData.push(this.state.beforeFilterItems[i]);
+                }
+            }
+            console.log(filterData);
+            this.clearData();
+            this.setState({
+                items: filterData,
+                dataSource: this.state.dataSource.cloneWithRows(filterData),
+            });
+            console.log(this.state.items);
+        }
+
     },
 
     renderLoadingView: function () {
@@ -226,15 +264,29 @@ var Home = React.createClass({
         this.fetchData(PAGE, this.state.keyWord);
     },
 
+    renderFilter: function () {
+        var placeHolder = "专题内搜索.."
+        return (<View style={{height:35}}>
+            <TextInput style={styles.search} placeholder={placeHolder} clearButtonMode="always"
+                       autoCapitalize="none" autoCorrect={false} onChangeText={(val)=>this._onFilter(val)}
+                       onSubmitEditing={(val)=>this._onFilter(val.nativeEvent.text)}/>
+        </View>)
+    },
+
     render: function () {
+        var extra = null;
+        if (this.state.canFilter) {
+            extra = this.renderFilter();
+        }
         if (!this.state.items || this.state.items == undefined) {
             return this.renderLoadingView();
         }
         else if (this.state.items.length == 0) {
-            return this.renderNoItemView();
+            return (<View style={{ flex: 1}}>{extra}{this.renderNoItemView()}</View>);
         }
         return (
             <View style={{ flex: 1}}>
+                {extra}
                 <View style={{ flex: 1,marginBottom:80}}>
                     {this.renderComic()}
                 </View>
@@ -255,7 +307,7 @@ var styles = StyleSheet.create({
     },
     search: {
         fontSize: 14,
-        height: 20,
+        height: 35,
         borderWidth: Util.pixel,
         borderColor: '#ccc',
         paddingLeft: 10,

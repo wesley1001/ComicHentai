@@ -112,15 +112,15 @@ var ComicHentai = React.createClass({
             data = this.state.data;
         }
         var initialRoute;
-        if (title == "漫画绅士" || title === '探索') {
+        if (title == "漫画绅士") {
             initialRoute = {
                 component: component,
                 title: title,
                 rightButtonIcon: require('image!31'),
-                onRightButtonPress: this._handleNextButtonPress
+                onRightButtonPress: this._toSearchComic
             }
             return (<NavigatorIOS
-                ref={"nav"}
+                ref={"comic_nav"}
                 style={{flex:1}}
                 barTintColor='#007AFF'
                 titleTextColor="#fff"
@@ -128,7 +128,25 @@ var ComicHentai = React.createClass({
                 translucent={false}
                 initialRoute={initialRoute}
             />)
-        } else {
+        }
+        else if (title == "探索") {
+            initialRoute = {
+                component: component,
+                title: title,
+                rightButtonIcon: require('image!31'),
+                onRightButtonPress: this._toSearchSpecial
+            }
+            return (<NavigatorIOS
+                ref={"explore_nav"}
+                style={{flex:1}}
+                barTintColor='#007AFF'
+                titleTextColor="#fff"
+                tintColor="#fff"
+                translucent={false}
+                initialRoute={initialRoute}
+            />)
+        }
+        else {
             initialRoute = {component: component, title: title, passProps: {data: data}};
             return (<NavigatorIOS
                 style={{flex:1}}
@@ -142,13 +160,25 @@ var ComicHentai = React.createClass({
 
     },
 
-    _handleNextButtonPress: function () {
-        if (this.refs.nav == undefined) {
+    _toSearchComic: function () {
+        if (this.refs.comic_nav == undefined) {
             return;
         }
-        this.refs.nav.push({
+        this.refs.comic_nav.push({
             component: Search,
-            title: '搜索页'
+            title: '搜索页',
+            passProps: {type: "comic"}
+        });
+    },
+
+    _toSearchSpecial: function () {
+        if (this.refs.explore_nav == undefined) {
+            return;
+        }
+        this.refs.explore_nav.push({
+            component: Search,
+            title: '搜索页',
+            passProps: {type: "special"}
         });
     },
 
