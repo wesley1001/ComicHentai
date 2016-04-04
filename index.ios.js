@@ -7,6 +7,7 @@ var User = require('./views/user');
 var Explore = require('./views/explore');
 var Util = require('./views/util');
 var Service = require('./views/service');
+var Search = require('./views/search');
 
 var {
     StyleSheet,
@@ -26,6 +27,7 @@ var {
     } = React;
 
 
+var navigator = null;
 StatusBarIOS.setStyle('light-content');
 var ComicHentai = React.createClass({
     statics: {
@@ -109,20 +111,75 @@ var ComicHentai = React.createClass({
         if (title === '探索') {
             data = this.state.data;
         }
-        return <NavigatorIOS
-            style={{flex:1}}
-            barTintColor='#007AFF'
-            titleTextColor="#fff"
-            tintColor="#fff"
-            translucent={false}
-            initialRoute={{
-          component: component,
-          title: title,
-          passProps:{
-            data: data
-          }
-        }}
-        />;
+        var initialRoute;
+        if (title == "漫画绅士") {
+            initialRoute = {
+                component: component,
+                title: title,
+                rightButtonIcon: require('image!31'),
+                onRightButtonPress: this._toSearchComic
+            }
+            return (<NavigatorIOS
+                ref={"comic_nav"}
+                style={{flex:1}}
+                barTintColor='#007AFF'
+                titleTextColor="#fff"
+                tintColor="#fff"
+                translucent={false}
+                initialRoute={initialRoute}
+            />)
+        }
+        else if (title == "探索") {
+            initialRoute = {
+                component: component,
+                title: title,
+                rightButtonIcon: require('image!31'),
+                onRightButtonPress: this._toSearchSpecial
+            }
+            return (<NavigatorIOS
+                ref={"explore_nav"}
+                style={{flex:1}}
+                barTintColor='#007AFF'
+                titleTextColor="#fff"
+                tintColor="#fff"
+                translucent={false}
+                initialRoute={initialRoute}
+            />)
+        }
+        else {
+            initialRoute = {component: component, title: title, passProps: {data: data}};
+            return (<NavigatorIOS
+                style={{flex:1}}
+                barTintColor='#007AFF'
+                titleTextColor="#fff"
+                tintColor="#fff"
+                translucent={false}
+                initialRoute={initialRoute}
+            />)
+        }
+
+    },
+
+    _toSearchComic: function () {
+        if (this.refs.comic_nav == undefined) {
+            return;
+        }
+        this.refs.comic_nav.push({
+            component: Search,
+            title: '搜索页',
+            passProps: {type: "comic"}
+        });
+    },
+
+    _toSearchSpecial: function () {
+        if (this.refs.explore_nav == undefined) {
+            return;
+        }
+        this.refs.explore_nav.push({
+            component: Search,
+            title: '搜索页',
+            passProps: {type: "special"}
+        });
     },
 
     _getEmail: function (val) {
@@ -214,6 +271,7 @@ var ComicHentai = React.createClass({
     },
 
     render: function () {
+        navigator = this.props.navigator;
         return (
             <View style={{flex:1}}>
                 {this.state.isLoadingShow ?

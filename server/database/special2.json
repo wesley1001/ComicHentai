@@ -3,7 +3,7 @@
     "id": "s_00",
     "title": "专题00",
     "coverImage": "http://ehgt.org/t/64/20/6420047d6fc6672fe660ce27bf3fcd83f3dd531c-1009483-1048-1524-jpg_l.jpg",
-    "comicIdListList": []
+    "comicIdList": []
   },
   {
     "id": "s_01",
@@ -237,9 +237,8 @@
     "id": "s_39",
     "title": "专题39",
     "coverImage": "http://ehgt.org/t/64/20/6420047d6fc6672fe660ce27bf3fcd83f3dd531c-1009483-1048-1524-jpg_l.jpg",
-    "comicIdList": []
+    "comicIdListList": []
   },
-
   {
     "id": "s_40",
     "title": "专题40",
