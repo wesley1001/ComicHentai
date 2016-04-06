@@ -29,7 +29,6 @@ var Search = React.createClass({
     getInitialState: function () {
         //查询类型
         var type = this.props.type;
-        console.log(type);
         return ({
             hasKeyWord: false,
             lastEditTime: 0,
@@ -66,7 +65,6 @@ var Search = React.createClass({
     },
 
     autoComplete: function (val) {
-        console.log("值为" + val);
         if (val == null || val == undefined || val == "") {
             this.setState({
                 keyWord: val,
@@ -80,14 +78,12 @@ var Search = React.createClass({
             this.setState({
                 hasKeyWord: false
             });
-            console.log("超过1500毫秒,发送请求");
             this.setState({
                 keyWord: val,
                 lastEditTime: thisTime,
                 hasKeyWord: true
             })
         } else {
-            console.log("太快,不发送");
             this.setState({
                 lastEditTime: thisTime
             })
@@ -97,7 +93,6 @@ var Search = React.createClass({
 
     submitKeyWord: function (val) {
         var that = this;
-        console.log("值为" + val);
         var keyWord = val;
         if (keyWord == null || keyWord == undefined || keyWord == "") {
             this.setState({

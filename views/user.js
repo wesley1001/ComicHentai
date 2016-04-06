@@ -5,9 +5,18 @@ var ModifyPassword = require('./manager/modifyPassword');
 var DeleteUser = require('./manager/deleteUser');
 var PostMessage = require('./manager/postMessage');
 
+var Config = require('./user/config');
+var Download = require('./user/download');
+var Favorite = require('./user/favorite');
+var History = require('./user/history');
+var Profile = require('./user/profile');
+var Special = require('./user/special');
+
+
 var {
     View,
     Text,
+    Image,
     ScrollView,
     StyleSheet,
     TouchableOpacity,
@@ -18,10 +27,10 @@ var {
 var User = React.createClass({
 
     render: function () {
-        var colors = ['#F4000B', '#17B4FF', '#FFD900', '#F00000'];
-        var tags = ['U', 'A', 'D', 'M'];
-        var items = ['修改密码', '增加联系人', '删除联系人', '发布公告'];
-        var components = [ModifyPassword, AddUser, DeleteUser, PostMessage];
+        var colors = ['#F4000B', '#17B4FF', '#FFD900', '#F00000', '#66CCFF'];
+        var tags = ['S', 'F', 'H', 'D', 'C'];
+        var items = ['我的专题', '我的收藏', '历史记录', '离线下载', '设置'];
+        var components = [Special, Favorite, History, Download, Config];
         var JSXDOM = [];
         for (var i in items) {
             JSXDOM.push(
@@ -37,6 +46,21 @@ var User = React.createClass({
 
         return (
             <ScrollView style={styles.container}>
+                <View key={'comic' + this.props.key} style={[styles.item,{height:90}]}>
+                    <TouchableOpacity style={[styles.item,{height:90}]}
+                                      onPress={this._loadPage.bind(this, "个人信息", Profile)}>
+                        <Image
+                            style={[styles.text,{marginLeft:10,marginTop:10}]}
+                            source={{uri: "https://avatars1.githubusercontent.com/u/8215153?v=3&s=460"}}
+                        />
+                        <View>
+                            <Text style={styles.noColor}>
+                                {"便当少年"}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+
                 <View style={styles.wrapper}>
                     {JSXDOM}
                 </View>
@@ -74,11 +98,12 @@ var styles = StyleSheet.create({
     },
     item: {
         height: 40,
-        justifyContent: 'center',
+        marginBottom: 10,
         borderTopWidth: Util.pixel,
         borderTopColor: '#ddd',
         backgroundColor: '#fff',
-        alignItems: 'center',
+        flexDirection: 'row',
+        alignItems: 'center'
     },
     font: {
         fontSize: 15,
@@ -86,12 +111,34 @@ var styles = StyleSheet.create({
         marginRight: 10,
     },
     wrapper: {
-        marginTop: 30,
+        marginTop: 10,
     },
     tag: {
         marginLeft: 10,
         fontSize: 16,
         fontWeight: 'bold'
+    },
+    text: {
+        width: 75,
+        height: 75,
+        borderRadius: 4,
+        marginLeft: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    noColor: {
+        fontSize: 12,
+        marginLeft: 5
+    },
+    link: {
+        color: '#1BB7FF',
+        marginTop: 2,
+    },
+    unColor: {
+        color: '#575656',
+        marginTop: 8,
+        fontSize: 12,
+        marginLeft: 5
     }
 });
 

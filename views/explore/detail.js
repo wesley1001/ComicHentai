@@ -21,7 +21,6 @@ var {
 var Detail = React.createClass({
 
     render: function () {
-        console.log(this.props.data);
         return (<View style={{flex: 1,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
             <Home
                 navigator={this.props.navigator}
