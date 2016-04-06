@@ -1,13 +1,14 @@
 var fs = require('fs');
 var util = require('./../util');
 var USER_PATH = './database/user.json';
-var SPECIAL_JSON = './database/special.json';
-
+var SPECIAL_JSON = './database/special_total.json';
+var COMIC_JSON = './database/total.json';
 var User = {
 
     init: function (app) {
         app.post('/user/get', this.getUser);
-        app.post('/user/getSpecial', this.getSpecial);
+        app.post('/user/special', this.getSpecial);
+        app.post('/user/favorite', this.getFavorite);
         app.post('/user/create', this.addUser);
         app.post('/user/login', this.login);
         app.post('/user/login/token', this.loginByToken);
@@ -31,7 +32,6 @@ var User = {
                     var obj = JSON.parse(data);
                     var newObj = [];
                     for (var i in obj) {
-                        console.log(obj[i]);
                         if (obj[i].partment === partment) {
                             delete obj[i]['password'];
                             newObj.push(obj[i]);
@@ -56,7 +56,12 @@ var User = {
         });
     },
 
-    //获取专题信息
+    /**
+     * 获取用户专属专题
+     * @param req
+     * @param res
+     * @returns {*}
+     */
     getSpecial: function (req, res) {
         var key = req.param('key');
         var title = req.param('title');
@@ -69,17 +74,58 @@ var User = {
         fs.readFile(SPECIAL_JSON, function (err, data) {
             if (!err) {
                 try {
-                    var obj = JSON.parse(data);
-                    var newObj = [];
-                    for (var i in obj) {
-                        if (obj[i].title === title) {
-                            newObj.push(obj[i]);
-                        }
+                    var specialList = JSON.parse(data);
+                    var userSpecialList = [];
+                    //随机找25个专题送给你
+                    for (var k = 0; k < 25; k++) {
+                        var randomIndex = Math.floor(Math.random() * (specialList.length));
+                        userSpecialList.push(specialList[randomIndex]);
                     }
-                    console.log(newObj);
                     return res.send({
                         status: 1,
-                        data: newObj
+                        data: userSpecialList
+                    });
+                } catch (e) {
+                    return res.send({
+                        status: 0,
+                        err: e
+                    });
+                }
+            }
+            return res.send({
+                status: 0,
+                err: err
+            });
+        });
+    },
+
+    /**
+     * 获取用户专属收藏
+     * @param req
+     * @param res
+     */
+    getFavorite: function (req, res) {
+        var key = req.param('key');
+        var title = req.param('title');
+        if (key !== util.getKey()) {
+            return res.send({
+                status: 0,
+                data: '使用了没有鉴权的key'
+            });
+        }
+        fs.readFile(COMIC_JSON, function (err, data) {
+            if (!err) {
+                try {
+                    var comicList = JSON.parse(data);
+                    var userFavoriteList = [];
+                    //随机找25个漫画送给你
+                    for (var k = 0; k < 25; k++) {
+                        var randomIndex = Math.floor(Math.random() * (comicList.length));
+                        userFavoriteList.push(comicList[randomIndex]);
+                    }
+                    return res.send({
+                        status: 1,
+                        data: userFavoriteList
                     });
                 } catch (e) {
                     return res.send({

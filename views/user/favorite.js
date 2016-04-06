@@ -4,6 +4,7 @@
  */
 var React = require('react-native');
 var Util = require('../util');
+var Home = require('../home');
 var Service = require('./../service');
 var {
     View,
@@ -17,16 +18,19 @@ var {
     } = React;
 
 
+var REQUEST_FAVORITE_URL = Service.host + Service.getUserFavorite;
 var Favorite = React.createClass({
 
     render: function () {
-        return (
-            <View style={styles.container}>
-                <Text style={styles.unColor}>
-                    收藏页
-                </Text>
-            </View>
-        );
+        return (<View style={{flex: 1,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
+            <Home
+                navigator={this.props.navigator}
+                requestUrl={REQUEST_FAVORITE_URL}
+                canRefresh={false}
+                canLoadNext={false}
+                canFilter={true}
+            />
+        </View>);
     }
 
 });

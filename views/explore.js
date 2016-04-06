@@ -27,13 +27,127 @@ var REQUEST_SPECIAL_URL = Service.host + Service.getSpecial;
 var PAGE = 0;
 var Explore = React.createClass({
 
+    /**
+     * 初始化页面状态
+     * @returns {{isLoadingTail: boolean, isRefreshing: boolean, width: number, items: Array, loadNext: boolean, keyWord: *}}
+     */
+    getInitialState: function () {
+        //减去paddingLeft && paddingRight && space
+        var width = Math.floor(((Util.size.width - 40)) / 3);
+        var keyWord = null;
+        if (this.props.requestUrl != undefined) {
+            REQUEST_SPECIAL_URL = this.props.requestUrl;
+            keyWord = this.props.keyWord;
+        }
+        return {
+            canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh, //可以刷新
+            canLoadNext: this.props.canLoadNext == undefined ? true : this.props.canLoadNext, //可以载入下一页
+            canFilter: this.props.canFilter == undefined ? false : this.props.canFilter,//可以过滤
+            beforeFilterItems: null, //过滤前的临时数据,初始为null,如果什么源数据都没有将会变成[]
+            isLoadingTail: false, //是否还在读取
+            isRefreshing: false, //是否在刷新
+            width: width, //当前宽度
+            items: [], //漫画列表
+            dataSource: this.props.items == undefined ? null : new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.props.items),
+            loadNext: false, //是否载入下一页
+            keyWord: keyWord //搜索关键字
+        };
+    },
+    /**
+     * 在完成渲染前读取数据
+     */
+    componentWillMount: function () {
+        this.setState({keyWord: this.props.keyWord});
+        this.fetchData(0, this.state.keyWord);
+    },
+
+
+    /**
+     * 刷新界面
+     * @private
+     */
+    _onRefresh() {
+        if (!this.state.canRefresh) {
+            return;
+        }
+        PAGE = 0;
+        this.setState({isRefreshing: true});
+        setTimeout(() => {
+            // prepend 10 items
+            this.clearData();
+            this.fetchData(0, this.state.keyWord);
+            this.setState({
+                isRefreshing: false,
+            });
+        }, 1000);
+    },
+
+    /**
+     * 读取下一页
+     * @private
+     */
+    _onLoadNext: function () {
+        this.setState({
+            loadNext: true
+        })
+    },
+
+    /**
+     * 当进行过滤的时候
+     * @param val
+     * @private
+     */
+    _onFilter: function (val) {
+        //先保存一发初始值
+        if (this.state.beforeFilterItems == null) {
+            this.setState({
+                beforeFilterItems: this.state.items,
+
+            });
+        }
+        //如果关键词清空状态下,读取原始数据
+        if (val == undefined || val == null || val == "") {
+            this.setState({
+                items: this.state.beforeFilterItems,
+                dataSource: this.state.dataSource.cloneWithRows(this.state.beforeFilterItems),
+            });
+        }
+        //否则过滤
+        else {
+            var filterData = [];
+            for (var i = 0; i < this.state.beforeFilterItems.length; i++) {
+                if (this.state.beforeFilterItems[i].title.indexOf(val) != -1) {
+                    filterData.push(this.state.beforeFilterItems[i]);
+                }
+            }
+            this.clearData();
+            this.setState({
+                items: filterData,
+                dataSource: this.state.dataSource.cloneWithRows(filterData),
+            });
+        }
+
+    },
+
+    /**
+     * 清空当前数据
+     */
     clearData: function () {
         this.setState({
-            items: []
+            items: [],
+            dataSource: this.state.dataSource.cloneWithRows(filterData),
         });
     },
 
+    /**
+     * 远端读取数据
+     * @param page
+     * @param keyWord
+     */
     fetchData: function (page, keyWord) {
+        if (!this.state.canLoadNext) {
+            return;
+        }
         if (page == null || page == undefined) {
             page = 0;
         }
@@ -47,7 +161,8 @@ var Explore = React.createClass({
                 var data = {
                     key: Util.key,
                     page: page,
-                    keyWord: keyWord
+                    keyWord: keyWord,
+                    token: token
                 };
                 var fetchOptions = {
                     method: 'POST',
@@ -88,64 +203,6 @@ var Explore = React.createClass({
                 console.log("尚未登录");
             }
         });
-    },
-
-
-    /**
-     * 初始化页面状态
-     * @returns {{isLoadingTail: boolean, isRefreshing: boolean, width: number, items: Array, loadNext: boolean, keyWord: *}}
-     */
-    getInitialState: function () {
-        //减去paddingLeft && paddingRight && space
-        var width = Math.floor(((Util.size.width - 40)) / 3);
-        var keyWord = null;
-        if (this.props.requestUrl != undefined) {
-            REQUEST_SPECIAL_URL = this.props.requestUrl;
-            keyWord = this.props.keyWord;
-        }
-        return {
-            isLoadingTail: false, //是否还在读取
-            isRefreshing: false, //是否在刷新
-            width: width, //当前宽度
-            items: [], //漫画列表
-            loadNext: false, //是否载入下一页
-            keyWord: keyWord //搜索关键字
-        };
-    },
-    /**
-     * 在完成渲染前读取数据
-     */
-    componentWillMount: function () {
-        this.setState({keyWord: this.props.keyWord});
-        this.fetchData(0, this.state.keyWord);
-    },
-
-
-    /**
-     * 刷新界面
-     * @private
-     */
-    _onRefresh() {
-        PAGE = 0;
-        this.setState({isRefreshing: true});
-        setTimeout(() => {
-            // prepend 10 items
-            this.clearData();
-            this.fetchData(0, this.state.keyWord);
-            this.setState({
-                isRefreshing: false,
-            });
-        }, 1000);
-    },
-
-    /**
-     * 读取下一页
-     * @private
-     */
-    _onLoadNext: function () {
-        this.setState({
-            loadNext: true
-        })
     },
 
     /**
@@ -238,14 +295,27 @@ var Explore = React.createClass({
      * 渲染专题
      */
     renderSpecial: function () {
-        return (
-            <ListView
-                onEndReached={this.renderNextPage}
-                contentLength={25}
-                dataSource={this.state.dataSource}
-                renderRow={(rowData) => this.renderRow(rowData)}
-                refreshControl={this.renderRefresh()}/>
-        );
+        //去掉刷新
+        if (this.state.canRefresh) {
+            return (
+                <ListView
+                    onEndReached={this.renderNextPage}
+                    contentLength={25}
+                    dataSource={this.state.dataSource}
+                    renderRow={(rowData) => this.renderRow(rowData)}
+                    refreshControl={this.renderRefresh()}/>
+            );
+        } else {
+            return (
+                <ListView
+                    onEndReached={this.renderNextPage}
+                    contentLength={25}
+                    dataSource={this.state.dataSource}
+                    renderRow={(rowData) => this.renderRow(rowData)}
+                />
+            );
+        }
+
     },
 
     /**
@@ -253,6 +323,9 @@ var Explore = React.createClass({
      * @param e
      */
     renderNextPage: function (e) {
+        if (!this.state.canLoadNext) {
+            return;
+        }
         if (this.state.isLoadingTail) {
             //已经读取过一次了
             return;
@@ -269,10 +342,27 @@ var Explore = React.createClass({
     },
 
     /**
+     * 渲染过滤搜索框
+     * @returns {XML}
+     */
+    renderFilter: function () {
+        var placeHolder = "搜索专题..";
+        return (<View style={{height:35}}>
+            <TextInput style={styles.search} placeholder={placeHolder} clearButtonMode="always"
+                       autoCapitalize="none" autoCorrect={false} onChangeText={(val)=>this._onFilter(val)}
+                       onSubmitEditing={(val)=>this._onFilter(val.nativeEvent.text)}/>
+        </View>)
+    },
+
+    /**
      * 渲染界面
      * @returns {*}
      */
     render: function () {
+        var extra = null;
+        if (this.state.canFilter) {
+            extra = this.renderFilter();
+        }
         //没数据
         if (!this.state.items || this.state.items == undefined) {
             return this.renderLoadingView();
@@ -283,6 +373,7 @@ var Explore = React.createClass({
         }
         return (
             <View style={{ flex: 1}}>
+                {extra}
                 <View style={{ flex: 1}}>
                     {this.renderSpecial()}
                 </View>
@@ -300,6 +391,15 @@ var styles = StyleSheet.create({
     container: {
         flex: 1,
         marginBottom: 80,
+    },
+    search: {
+        fontSize: 14,
+        height: 35,
+        borderWidth: Util.pixel,
+        borderColor: '#ccc',
+        paddingLeft: 10,
+        borderRadius: 6,
+        backgroundColor: '#fff',
     },
     itemRow: {
         flexDirection: 'row',

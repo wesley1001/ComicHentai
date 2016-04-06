@@ -48,7 +48,7 @@ var User = React.createClass({
             <ScrollView style={styles.container}>
                 <View key={'comic' + this.props.key} style={[styles.item,{height:90}]}>
                     <TouchableOpacity style={[styles.item,{height:90}]}
-                                      onPress={this._loadPage.bind(this, "个人信息", Profile)}>
+                                      onPress={this._loadPage.bind(this, Profile,"个人信息")}>
                         <Image
                             style={[styles.text,{marginLeft:10,marginTop:10}]}
                             source={{uri: "https://avatars1.githubusercontent.com/u/8215153?v=3&s=460"}}
@@ -80,7 +80,10 @@ var User = React.createClass({
     _loadPage: function (component, title) {
         this.props.navigator.push({
             title: title,
-            component: component
+            component: component,
+            passProps: {
+                userId: 1 //传递过去的UserId
+            }
         });
     },
 
@@ -99,8 +102,6 @@ var styles = StyleSheet.create({
     item: {
         height: 40,
         marginBottom: 10,
-        borderTopWidth: Util.pixel,
-        borderTopColor: '#ddd',
         backgroundColor: '#fff',
         flexDirection: 'row',
         alignItems: 'center'

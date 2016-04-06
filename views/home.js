@@ -26,57 +26,6 @@ var REQUEST_COMIC_URL = Service.host + Service.getComic;
 var PAGE = 0;
 var Home = React.createClass({
 
-    clearData: function () {
-        this.setState({
-            items: []
-        });
-    },
-
-    fetchData: function (page, keyWord) {
-        if (!this.state.canLoadNext) {
-            return;
-        }
-        if (page == null || page == undefined) {
-            page = 0;
-        }
-        if (keyWord == null || keyWord == undefined) {
-            keyWord = "";
-        }
-        var that = this;
-        //TODO:之后去掉
-        AsyncStorage.getItem('token', function (err, token) {
-            if (!err && token) {
-                var data = {
-                    key: Util.key,
-                    page: page,
-                    keyWord: keyWord
-                };
-                var fetchOptions = {
-                    method: 'POST',
-                    headers: {
-                        'Accept': 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(data)
-                };
-                fetch(REQUEST_COMIC_URL, fetchOptions)
-                    .then((response) => response.json())
-                    .then((responseText) => {
-                        //创建ListView
-                        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-                        that.setState({
-                            items: that.state.items.concat(responseText.data),
-                            dataSource: ds.cloneWithRows(that.state.items.concat(responseText.data)),
-                            loadNext: false
-                        });
-                    }).done();
-            } else {
-                console.log("尚未登录");
-            }
-        });
-    },
-
-
     /**
      * 初始化状态
      * @returns {{canRefresh: boolean, canLoadNext: boolean, isLoadingTail: boolean, isRefreshing: boolean, width: number, items: *, dataSource: null, loadNext: boolean, keyWord: *}}
@@ -104,12 +53,19 @@ var Home = React.createClass({
         };
     },
 
+    /**
+     * 在渲染前读取
+     */
     componentWillMount: function () {
         this.setState({keyWord: this.props.keyWord});
         this.fetchData(0, this.state.keyWord);
     },
 
 
+    /**
+     * 刷新时的操作
+     * @private
+     */
     _onRefresh() {
         if (!this.state.canRefresh) {
             return;
@@ -126,12 +82,21 @@ var Home = React.createClass({
         }, 1000);
     },
 
+    /**
+     * 载入时更新状态
+     * @private
+     */
     _onLoadNext: function () {
         this.setState({
             loadNext: true
         })
     },
 
+    /**
+     * 当进行过滤的时候
+     * @param val
+     * @private
+     */
     _onFilter: function (val) {
         //先保存一发初始值
         if (this.state.beforeFilterItems == null) {
@@ -162,6 +127,66 @@ var Home = React.createClass({
             });
         }
 
+    },
+
+    /**
+     * 清空当前数据
+     */
+    clearData: function () {
+        this.setState({
+            items: [],
+            dataSource: this.state.dataSource.cloneWithRows(filterData),
+        });
+    },
+
+    /**
+     * 远端读取数据
+     * @param page
+     * @param keyWord
+     */
+    fetchData: function (page, keyWord) {
+        if (!this.state.canLoadNext) {
+            return;
+        }
+        if (page == null || page == undefined) {
+            page = 0;
+        }
+        if (keyWord == null || keyWord == undefined) {
+            keyWord = "";
+        }
+        var that = this;
+        //TODO:之后去掉
+        AsyncStorage.getItem('token', function (err, token) {
+            if (!err && token) {
+                var data = {
+                    key: Util.key,
+                    page: page,
+                    keyWord: keyWord,
+                    token: token
+                };
+                var fetchOptions = {
+                    method: 'POST',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                };
+                fetch(REQUEST_COMIC_URL, fetchOptions)
+                    .then((response) => response.json())
+                    .then((responseText) => {
+                        //创建ListView
+                        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+                        that.setState({
+                            items: that.state.items.concat(responseText.data),
+                            dataSource: ds.cloneWithRows(that.state.items.concat(responseText.data)),
+                            loadNext: false
+                        });
+                    }).done();
+            } else {
+                console.log("尚未登录");
+            }
+        });
     },
 
     renderLoadingView: function () {
@@ -197,6 +222,11 @@ var Home = React.createClass({
         );
     },
 
+    /**
+     * 每一行的数据
+     * @param rowData 是一个JSONArray 包含对象
+     * @returns {XML}
+     */
     renderRow: function (rowData) {
         return (<ItemBlock
             key={rowData.comicId}
@@ -206,6 +236,10 @@ var Home = React.createClass({
         />);
     },
 
+    /**
+     * 渲染刷新按钮
+     * @returns {XML}
+     */
     renderRefresh: function () {
         return (<RefreshControl
             refreshing={this.state.isRefreshing}
@@ -217,7 +251,12 @@ var Home = React.createClass({
         />);
     },
 
+    /**
+     * 渲染漫画
+     * @returns {XML}
+     */
     renderComic: function () {
+        //去掉刷新
         if (this.state.canRefresh) {
             return (
                 <ListView
@@ -239,12 +278,16 @@ var Home = React.createClass({
         }
     },
 
+    /**
+     * 渲染下一页
+     * @param e
+     */
     renderNextPage: function (e) {
         if (!this.state.canLoadNext) {
             return;
         }
         if (this.state.isLoadingTail) {
-            // We're already fetching
+            //已经读取过一次了
             return;
         }
         this.setState({
@@ -258,8 +301,12 @@ var Home = React.createClass({
         this.fetchData(PAGE, this.state.keyWord);
     },
 
+    /**
+     * 渲染过滤搜索框
+     * @returns {XML}
+     */
     renderFilter: function () {
-        var placeHolder = "专题内搜索..";
+        var placeHolder = "在专题内搜索漫画..";
         return (<View style={{height:35}}>
             <TextInput style={styles.search} placeholder={placeHolder} clearButtonMode="always"
                        autoCapitalize="none" autoCorrect={false} onChangeText={(val)=>this._onFilter(val)}
@@ -267,6 +314,10 @@ var Home = React.createClass({
         </View>)
     },
 
+    /**
+     * 渲染界面
+     * @returns {*}
+     */
     render: function () {
         var extra = null;
         if (this.state.canFilter) {
