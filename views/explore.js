@@ -100,7 +100,6 @@ var Explore = React.createClass({
         var width = Math.floor(((Util.size.width - 40)) / 3);
         var keyWord = null;
         if (this.props.requestUrl != undefined) {
-            console.log("请求变更为" + this.props.requestUrl);
             REQUEST_SPECIAL_URL = this.props.requestUrl;
             keyWord = this.props.keyWord;
         }

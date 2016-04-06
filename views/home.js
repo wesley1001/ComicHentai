@@ -86,7 +86,6 @@ var Home = React.createClass({
         var width = Math.floor(Util.size.width);
         var keyWord = null;
         if (this.props.requestUrl != undefined) {
-            console.log("请求变更为" + this.props.requestUrl);
             REQUEST_COMIC_URL = this.props.requestUrl;
             keyWord = this.props.keyWord;
         }
@@ -134,10 +133,8 @@ var Home = React.createClass({
     },
 
     _onFilter: function (val) {
-        console.log("值为" + val);
         //先保存一发初始值
         if (this.state.beforeFilterItems == null) {
-            console.log("过滤前的值为空,需要保存");
             this.setState({
                 beforeFilterItems: this.state.items,
 
@@ -158,13 +155,11 @@ var Home = React.createClass({
                     filterData.push(this.state.beforeFilterItems[i]);
                 }
             }
-            console.log(filterData);
             this.clearData();
             this.setState({
                 items: filterData,
                 dataSource: this.state.dataSource.cloneWithRows(filterData),
             });
-            console.log(this.state.items);
         }
 
     },
@@ -245,7 +240,6 @@ var Home = React.createClass({
     },
 
     renderNextPage: function (e) {
-        console.log('onEndReached', this.state.isLoadingTail);
         if (!this.state.canLoadNext) {
             return;
         }
@@ -265,7 +259,7 @@ var Home = React.createClass({
     },
 
     renderFilter: function () {
-        var placeHolder = "专题内搜索.."
+        var placeHolder = "专题内搜索..";
         return (<View style={{height:35}}>
             <TextInput style={styles.search} placeholder={placeHolder} clearButtonMode="always"
                        autoCapitalize="none" autoCorrect={false} onChangeText={(val)=>this._onFilter(val)}
