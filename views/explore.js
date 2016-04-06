@@ -135,7 +135,7 @@ var Explore = React.createClass({
     clearData: function () {
         this.setState({
             items: [],
-            dataSource: this.state.dataSource.cloneWithRows(filterData),
+            dataSource: this.state.dataSource.cloneWithRows([]),
         });
     },
 
@@ -145,7 +145,8 @@ var Explore = React.createClass({
      * @param keyWord
      */
     fetchData: function (page, keyWord) {
-        if (!this.state.canLoadNext) {
+        //如果初始化有数据,同时禁用翻页,那就直接展示了
+        if (this.props.items != undefined && !this.state.canLoadNext) {
             return;
         }
         if (page == null || page == undefined) {

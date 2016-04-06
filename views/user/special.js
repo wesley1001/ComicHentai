@@ -22,11 +22,11 @@ var Special = React.createClass({
 
     render: function () {
         return (
-            <View style={{flex: 1,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
+            <View style={{flex: 1,marginBottom:80,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
                 <Explore
                     navigator={this.props.navigator}
                     requestUrl={REQUEST_SPECIAL_URL}
-                    canRefresh={false}
+                    keyWord={""}
                     canLoadNext={false}
                     canFilter={true}
                 />
