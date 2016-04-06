@@ -200,7 +200,7 @@ var Home = React.createClass({
         return (
             <View style={styles.container}>
                 <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10,marginBottom:10}}>
-                    正在读取中...
+                    正在读取漫画中...
                 </Text>
                 <ActivityIndicatorIOS size="large" color="#268DFF"/>
             </View>
