@@ -14,6 +14,7 @@ var {
     ScrollView,
     StyleSheet,
     TextInput,
+    ActivityIndicatorIOS,
     TimerMixin,
     AlertIOS,
     AsyncStorage,
@@ -46,7 +47,7 @@ var Home = React.createClass({
             isLoadingTail: false, //是否还在读取
             isRefreshing: false, //是否在刷新是否还在读取
             width: width, //当前宽度
-            items: this.props.items == undefined ? [] : this.props.items, //漫画列表
+            items: this.props.items == undefined ? undefined : this.props.items, //漫画列表
             dataSource: this.props.items == undefined ? null : new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.props.items),
             loadNext: false, //是否载入下一页
             keyWord: keyWord //搜索关键字
@@ -133,8 +134,9 @@ var Home = React.createClass({
      * 清空当前数据
      */
     clearData: function () {
+        PAGE = 0;
         this.setState({
-            items: [],
+            items: undefined,
             dataSource: this.state.dataSource.cloneWithRows([]),
         });
     },
@@ -173,14 +175,18 @@ var Home = React.createClass({
                     },
                     body: JSON.stringify(data)
                 };
+                var items = that.state.items;
+                if(items == undefined){
+                    items = [];
+                }
                 fetch(REQUEST_COMIC_URL, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
                         //创建ListView
                         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
                         that.setState({
-                            items: that.state.items.concat(responseText.data),
-                            dataSource: ds.cloneWithRows(that.state.items.concat(responseText.data)),
+                            items: items.concat(responseText.data),
+                            dataSource: ds.cloneWithRows(items.concat(responseText.data)),
                             loadNext: false
                         });
                     }).done();
@@ -193,9 +199,10 @@ var Home = React.createClass({
     renderLoadingView: function () {
         return (
             <View style={styles.container}>
-                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10}}>
+                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10,marginBottom:10}}>
                     正在读取中...
                 </Text>
+                <ActivityIndicatorIOS size="large" color="#268DFF"/>
             </View>
         );
     },
@@ -203,9 +210,10 @@ var Home = React.createClass({
     renderNoItemView: function () {
         return (
             <View style={styles.container}>
-                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10}}>
-                    什么都没有哟...
+                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10,marginBottom:10}}>
+                    找不到,怪我咯...
                 </Text>
+                <ActivityIndicatorIOS size="large" color="#268DFF"/>
             </View>
         );
     },

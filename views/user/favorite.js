@@ -22,7 +22,7 @@ var REQUEST_FAVORITE_URL = Service.host + Service.getUserFavorite;
 var Favorite = React.createClass({
 
     render: function () {
-        return (<View style={{flex: 1,marginBottom:80,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
+        return (<View style={{flex: 1,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
             <Home
                 navigator={this.props.navigator}
                 requestUrl={REQUEST_FAVORITE_URL}

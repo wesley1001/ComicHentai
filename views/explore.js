@@ -14,6 +14,7 @@ var {
     View ,
     ScrollView,
     StyleSheet,
+    ActivityIndicatorIOS,
     TextInput,
     TimerMixin,
     AlertIOS,
@@ -47,7 +48,7 @@ var Explore = React.createClass({
             isLoadingTail: false, //是否还在读取
             isRefreshing: false, //是否在刷新
             width: width, //当前宽度
-            items: [], //漫画列表
+            items: this.props.items == undefined ? undefined : this.props.items, //专题列表
             dataSource: this.props.items == undefined ? null : new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.props.items),
             loadNext: false, //是否载入下一页
             keyWord: keyWord //搜索关键字
@@ -133,8 +134,9 @@ var Explore = React.createClass({
      * 清空当前数据
      */
     clearData: function () {
+        PAGE = 0;
         this.setState({
-            items: [],
+            items: undefined,
             dataSource: this.state.dataSource.cloneWithRows([]),
         });
     },
@@ -173,13 +175,17 @@ var Explore = React.createClass({
                     },
                     body: JSON.stringify(data)
                 };
+                var items = that.state.items;
+                if(items == undefined){
+                    items = [];
+                }
                 fetch(REQUEST_SPECIAL_URL, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
                         //创建ListView
                         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
                         //在这里将数据处理下,读取老数据,并让其每4个Object放在一行
-                        var data = that.state.items.concat(responseText.data);
+                        var data = items.concat(responseText.data);
                         var rowCount = (data.length / 3) + 1;
                         var totalData = [];
                         for (var i = 0; i < rowCount; i++) {
@@ -195,7 +201,7 @@ var Explore = React.createClass({
                         }
                         //添加查询出来的数据
                         that.setState({
-                            items: that.state.items.concat(responseText.data),
+                            items: items.concat(responseText.data),
                             dataSource: ds.cloneWithRows(totalData),
                             loadNext: false
                         });
@@ -213,9 +219,10 @@ var Explore = React.createClass({
     renderLoadingView: function () {
         return (
             <View style={styles.container}>
-                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10}}>
+                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10,marginBottom:10}}>
                     正在读取专题中...
                 </Text>
+                <ActivityIndicatorIOS size="large" color="#268DFF"/>
             </View>
         );
     },
@@ -227,9 +234,10 @@ var Explore = React.createClass({
     renderNoItemView: function () {
         return (
             <View style={styles.container}>
-                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10}}>
-                    什么都没有哟...
+                <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10,marginBottom:10}}>
+                    找不到,怪我咯...
                 </Text>
+                <ActivityIndicatorIOS size="large" color="#268DFF"/>
             </View>
         );
     },
