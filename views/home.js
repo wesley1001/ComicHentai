@@ -176,7 +176,7 @@ var Home = React.createClass({
                     body: JSON.stringify(data)
                 };
                 var items = that.state.items;
-                if(items == undefined){
+                if (items == undefined) {
                     items = [];
                 }
                 fetch(REQUEST_COMIC_URL, fetchOptions)
@@ -196,6 +196,10 @@ var Home = React.createClass({
         });
     },
 
+    /**
+     * 载入页
+     * @returns {XML}
+     */
     renderLoadingView: function () {
         return (
             <View style={styles.container}>
@@ -207,6 +211,10 @@ var Home = React.createClass({
         );
     },
 
+    /**
+     * 查询无结果
+     * @returns {XML}
+     */
     renderNoItemView: function () {
         return (
             <View style={styles.container}>
@@ -218,6 +226,10 @@ var Home = React.createClass({
         );
     },
 
+    /**
+     * 加载中
+     * @returns {XML}
+     */
     renderLoadingNextView: function () {
         if (!this.state.loadNext) {
             return;
