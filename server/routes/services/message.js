@@ -10,6 +10,7 @@ var Message = {
     init: function (app) {
         app.post('/message/get', this.getMessage);
         app.post('/message/add', this.addMessage);
+        app.post('/comic/chapter',this.getChapter)
         app.post('/comic/get', this.getComic);
         app.post('/comic/search', this.searchComic);
         app.post('/special/get', this.getSpecial);
@@ -59,9 +60,16 @@ var Message = {
             if (!err) {
                 try {
                     var obj = JSON.parse(data);
+                    var chapter = null;
+                    //假装搜索一番
+                    for (var i = 0; i < obj.length; i++) {
+                        chapter = obj[0];
+                    }
+                    console.log(chapter);
                     return res.send({
                         status: 1,
-                        data: data
+                        data: chapter,
+                        isEnd: true
                     });
                 } catch (e) {
                     console.log(e);

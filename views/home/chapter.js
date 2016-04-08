@@ -5,13 +5,13 @@
 
 var React = require('react-native');
 var Util = require('./../util');
-var ItemBlock = require('./../home/itemblock');
 var Service = require('./../service')
 
 var {
     Text,
     View ,
     ScrollView,
+    Image,
     StyleSheet,
     TextInput,
     ActivityIndicatorIOS,
@@ -23,7 +23,7 @@ var {
     TouchableHighlight,
     } = React;
 
-var REQUEST_COMIC_URL = Service.host + Service.getChapter;
+var REQUEST_CHAPTER_URL = Service.host + Service.getChapter;
 var PAGE = 0;
 var Chapter = React.createClass({
 
@@ -36,7 +36,7 @@ var Chapter = React.createClass({
         var width = Math.floor(Util.size.width);
         var keyWord = null;
         if (this.props.requestUrl != undefined) {
-            REQUEST_COMIC_URL = this.props.requestUrl;
+            REQUEST_CHAPTER_URL = this.props.requestUrl;
             keyWord = this.props.keyWord;
         }
         return {
@@ -144,18 +144,18 @@ var Chapter = React.createClass({
                 if (items == undefined) {
                     items = [];
                 }
-                fetch(REQUEST_COMIC_URL, fetchOptions)
+                fetch(REQUEST_CHAPTER_URL, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
                         //创建ListView
                         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-                        var isEnd = responseText.data.isEnd;
-                        var content = responseText.data.chapterContent;
                         //判断之后是否还需要载入
                         var canLoadNext = true;
-                        if (isEnd == true) {
+                        var data = responseText.data;
+                        if (data.isEnd == undefined || data.isEnd == true) {
                             canLoadNext = false;
                         }
+                        var content = responseText.data.chapterContent;
                         that.setState({
                             items: items.concat(content),
                             dataSource: ds.cloneWithRows(items.concat(content)),
@@ -210,6 +210,7 @@ var Chapter = React.createClass({
      * @returns {XML}
      */
     renderRow: function (rowData) {
+        console.log(rowData);
         return ( <Image
             style={[styles.img]}
             source={{uri: rowData}}
@@ -315,8 +316,7 @@ var styles = StyleSheet.create({
         marginBottom: 80,
     },
     img: {
-        width: 100,
-        height: 100,
+        width: Util.size.width,
         borderRadius: 4,
         marginLeft: 0,
         alignItems: 'center',

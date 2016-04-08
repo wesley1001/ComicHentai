@@ -75,12 +75,12 @@ var Detail = React.createClass({
                     </View>
                 </View>
                 <View key={'chapter' + this.props.key} style={[styles.row,{marginTop:5,flex:1}]}>
-                    <TouchableHighlight underlayColor="#fff" style={styles.btn}
-                                        onPress={this._startRead.bind(comic.comicId,0)}>
+                    <TouchableOpacity underlayColor="#fff" style={styles.btn}
+                                      onPress={this._startRead.bind(this,comic.comicId,0)}>
                         <Text style={{color:'#fff'}}>开始阅读</Text>
-                    </TouchableHighlight>
+                    </TouchableOpacity>
                     <TouchableHighlight underlayColor="#fff" style={styles.btn}
-                                        onPress={this._favorite.bind(comic.comicId)}>
+                                        onPress={this._favorite(this,comic.comicId)}>
                         <Text style={{color:'#fff'}}>收藏漫画</Text>
                     </TouchableHighlight>
                 </View>

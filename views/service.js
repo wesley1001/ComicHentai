@@ -5,7 +5,7 @@ var Service = {
     getUser: '/user/get',
     createUser: '/user/create',
     getMessage: '/message/get',
-    getChapter: '/message/chapter',
+    getChapter: '/comic/chapter',
     getSpecial: '/special/get',
     searchSpecial: '/special/search',
     getComic: '/comic/get',
