@@ -1,20 +1,53 @@
 var React = require('react-native');
 var Util = require('../util');
+var Chapter = require("./chapter")
 var {
     View,
     Text,
     StyleSheet,
     Image,
     ScrollView,
+    TouchableHighlight,
     TouchableOpacity,
     } = React;
 
 var number = Math.floor(Util.size.width - 20);
 var Detail = React.createClass({
-    render: function () {
 
+    /**
+     * 初始化状态
+     */
+    getInitialState: function () {
+        return ({
+            chapters: []
+        })
+    },
+    /**
+     * 进入阅读界面
+     * @private
+     */
+    _startRead: function (comicId, chapterId) {
+        this.props.navigator.push({
+            title: "章节",
+            component: Chapter,
+            passProps: {
+                comicId: comicId,
+                chapterId: chapterId
+            }
+        });
+    },
+    /**
+     * 收藏操作
+     * @private
+     */
+    _favorite: function (comicId) {
+
+    },
+
+    render: function () {
+        var chapters = this.state.chapters;
         var comic = this.props.comicData;
-        var rank = ['E', 'D', 'C', 'B', 'A', 'S']
+        var rank = ['E', 'D', 'C', 'B', 'A', 'S'];
         var comicTitle = comic.comicTitle;
         if (comicTitle.length > 40) {
             if (comicTitle.contains("]")) {
@@ -41,7 +74,17 @@ var Detail = React.createClass({
                         </Text>
                     </View>
                 </View>
-                <ScrollView key={'info' + this.props.key} style={[styles.row,{marginTop:5,height:150}]}>
+                <View key={'chapter' + this.props.key} style={[styles.row,{marginTop:5,flex:1}]}>
+                    <TouchableHighlight underlayColor="#fff" style={styles.btn}
+                                        onPress={this._startRead.bind(comic.comicId,0)}>
+                        <Text style={{color:'#fff'}}>开始阅读</Text>
+                    </TouchableHighlight>
+                    <TouchableHighlight underlayColor="#fff" style={styles.btn}
+                                        onPress={this._favorite.bind(comic.comicId)}>
+                        <Text style={{color:'#fff'}}>收藏漫画</Text>
+                    </TouchableHighlight>
+                </View>
+                <ScrollView key={'info' + this.props.key} style={[styles.row,{marginTop:5,flex:1}]}>
                     <View>
                         <Text style={[styles.noColor,{marginLeft:5}]}>
                             {"漫画标签:" + comic.comicTag}
@@ -70,7 +113,7 @@ var styles = StyleSheet.create({
         marginBottom: 80,
     },
     row: {
-        height: 110,
+        flex: 1,
         borderBottomWidth: Util.pixel,
         borderBottomColor: '#ccc',
         flexDirection: 'row',
@@ -101,6 +144,16 @@ var styles = StyleSheet.create({
         marginTop: 8,
         fontSize: 12,
         marginLeft: 5
+    },
+    btn: {
+        margin: 10,
+        flex: 1,
+        width: 80,
+        height: 40,
+        backgroundColor: '#3BC1FF',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 4,
     }
 });
 

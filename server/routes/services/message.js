@@ -5,6 +5,7 @@ var USER_PATH = './database/user.json';
 var COMIC_PATH = './database/comic.json';
 var COMIC_TOTAL_PATH = './database/total.json';
 var SPECIAL_TOTAL_PATH = './database/special_total.json';
+var TEST_CHAPTER_PATH = './database/chapter.json';
 var Message = {
     init: function (app) {
         app.post('/message/get', this.getMessage);
@@ -33,6 +34,37 @@ var Message = {
                         data: obj
                     });
                 } catch (e) {
+                    return res.send({
+                        status: 0,
+                        err: e
+                    });
+                }
+            }
+            return res.send({
+                status: 0,
+                err: err
+            });
+        });
+    },
+
+    /**
+     * 获取章节信息
+     * @param req
+     * @param res
+     */
+    getChapter: function (req, res) {
+        var chapterId = req.param("chapterId");
+        var comicId = req.param("comicId");
+        fs.readFile(TEST_CHAPTER_PATH, function (err, data) {
+            if (!err) {
+                try {
+                    var obj = JSON.parse(data);
+                    return res.send({
+                        status: 1,
+                        data: data
+                    });
+                } catch (e) {
+                    console.log(e);
                     return res.send({
                         status: 0,
                         err: e
