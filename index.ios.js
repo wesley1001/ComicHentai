@@ -276,7 +276,7 @@ var ComicHentai = React.createClass({
             <View style={{flex:1}}>
                 {this.state.isLoadingShow ?
                     <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                        <ActivityIndicatorIOS size="small" color="#268DFF"></ActivityIndicatorIOS>
+                        <ActivityIndicatorIOS size="small" color="#268DFF"/>
                     </View> : null
                 }
                 {!this.state.isLoadingShow ?

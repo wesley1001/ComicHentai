@@ -4,6 +4,7 @@
  */
 var React = require('react-native');
 var Util = require('../util');
+var Explore = require('../explore');
 var Service = require('./../service');
 var {
     View,
@@ -16,15 +17,19 @@ var {
     AlertIOS,
     } = React;
 
-
+var REQUEST_SPECIAL_URL = Service.host + Service.getUserSpecial;
 var Special = React.createClass({
 
     render: function () {
         return (
-            <View style={styles.container}>
-                <Text style={styles.unColor}>
-                    用户专题页
-                </Text>
+            <View style={{flex: 1,marginBottom:80,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
+                <Explore
+                    navigator={this.props.navigator}
+                    requestUrl={REQUEST_SPECIAL_URL}
+                    keyWord={""}
+                    canLoadNext={false}
+                    canFilter={true}
+                />
             </View>
         );
     }

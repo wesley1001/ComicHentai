@@ -5,10 +5,12 @@ var USER_PATH = './database/user.json';
 var COMIC_PATH = './database/comic.json';
 var COMIC_TOTAL_PATH = './database/total.json';
 var SPECIAL_TOTAL_PATH = './database/special_total.json';
+var TEST_CHAPTER_PATH = './database/chapter.json';
 var Message = {
     init: function (app) {
         app.post('/message/get', this.getMessage);
         app.post('/message/add', this.addMessage);
+        app.post('/comic/chapter',this.getChapter)
         app.post('/comic/get', this.getComic);
         app.post('/comic/search', this.searchComic);
         app.post('/special/get', this.getSpecial);
@@ -47,6 +49,44 @@ var Message = {
     },
 
     /**
+     * 获取章节信息
+     * @param req
+     * @param res
+     */
+    getChapter: function (req, res) {
+        var chapterId = req.param("chapterId");
+        var comicId = req.param("comicId");
+        fs.readFile(TEST_CHAPTER_PATH, function (err, data) {
+            if (!err) {
+                try {
+                    var obj = JSON.parse(data);
+                    var chapter = null;
+                    //假装搜索一番
+                    for (var i = 0; i < obj.length; i++) {
+                        chapter = obj[0];
+                    }
+                    console.log(chapter);
+                    return res.send({
+                        status: 1,
+                        data: chapter,
+                        isEnd: true
+                    });
+                } catch (e) {
+                    console.log(e);
+                    return res.send({
+                        status: 0,
+                        err: e
+                    });
+                }
+            }
+            return res.send({
+                status: 0,
+                err: err
+            });
+        });
+    },
+
+    /**
      * 搜素漫画信息
      * @param req
      * @param res
@@ -56,6 +96,9 @@ var Message = {
         var key = req.param('key');
         var page = req.param('page');
         var keyWord = req.param('keyWord');
+        var token = req.param("token");
+        console.log("token为");
+        console.log(token);
         if (page == null || page == undefined) {
             page = 0;
         }
@@ -115,6 +158,9 @@ var Message = {
         var key = req.param('key');
         var page = req.param('page');
         var comicId = req.param('comicId');
+        var token = req.param("token");
+        console.log("token为");
+        console.log(token);
         var path = ['./database/comic.json', './database/comic1.json', './database/comic2.json', './database/comic3.json']
         if (page == null || page == undefined) {
             page = 0;
@@ -134,7 +180,6 @@ var Message = {
                         var obj = JSON.parse(data);
                         for (var i = 0; i < obj.length; i++) {
                             if (obj[i].comicId == comicId) {
-                                console.log(obj[i]);
                                 return res.send({
                                     status: 1,
                                     data: obj[i]
@@ -159,7 +204,6 @@ var Message = {
                 if (!err) {
                     try {
                         var obj = JSON.parse(data);
-                        console.log(obj);
                         return res.send({
                             status: 1,
                             data: obj
@@ -191,6 +235,9 @@ var Message = {
         var page = req.param('page');
         var specialId = req.param('id');
         var path = ['./database/special.json', './database/special1.json', './database/special2.json', './database/special3.json'];
+        var token = req.param("token");
+        console.log("token为");
+        console.log(token);
         if (page == null || page == undefined) {
             page = 0;
         }
@@ -210,10 +257,10 @@ var Message = {
                 for (var i = 0; i < specialJson.length; i++) {
                     if (specialId == specialJson[i].id) {
                         var comicIdList = specialJson[i].comicIdList;
-                        if(comicIdList == undefined){
+                        if (comicIdList == undefined) {
                             comicIdList = []
                         }
-                        for(var k = 0 ; k < 25 ; k++){
+                        for (var k = 0; k < 25; k++) {
                             var randomIndex = Math.floor(Math.random() * (comicJson.length));
                             comicIdList.push(comicJson[randomIndex].comicId);
                         }
@@ -228,7 +275,6 @@ var Message = {
                         }
                     }
                 }
-                console.log(result);
                 return res.send({
                     status: 1,
                     data: result
@@ -244,7 +290,6 @@ var Message = {
                 if (!err) {
                     try {
                         var obj = JSON.parse(data);
-                        console.log(obj);
                         return res.send({
                             status: 1,
                             data: obj
@@ -273,6 +318,9 @@ var Message = {
         var key = req.param('key');
         var page = req.param('page');
         var keyWord = req.param('keyWord');
+        var token = req.param("token");
+        console.log("token为");
+        console.log(token);
         if (page == null || page == undefined) {
             page = 0;
         }
@@ -308,7 +356,6 @@ var Message = {
                         data: resultList
                     });
                 } catch (e) {
-                    console.log(e);
                     return res.send({
                         status: 0,
                         err: e

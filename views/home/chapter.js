@@ -1,17 +1,17 @@
 /**
- * 主页
- * Created by hope6537 on 16/01/30
+ * 漫画阅读页
+ * Created by hope6537 on 16/04/08
  */
 
 var React = require('react-native');
-var Util = require('./util');
-var ItemBlock = require('./home/itemblock');
-var Service = require('./service')
+var Util = require('./../util');
+var Service = require('./../service')
 
 var {
     Text,
     View ,
     ScrollView,
+    Image,
     StyleSheet,
     TextInput,
     ActivityIndicatorIOS,
@@ -23,9 +23,9 @@ var {
     TouchableHighlight,
     } = React;
 
-var REQUEST_COMIC_URL = Service.host + Service.getComic;
+var REQUEST_CHAPTER_URL = Service.host + Service.getChapter;
 var PAGE = 0;
-var Home = React.createClass({
+var Chapter = React.createClass({
 
     /**
      * 初始化状态
@@ -36,19 +36,19 @@ var Home = React.createClass({
         var width = Math.floor(Util.size.width);
         var keyWord = null;
         if (this.props.requestUrl != undefined) {
-            REQUEST_COMIC_URL = this.props.requestUrl;
+            REQUEST_CHAPTER_URL = this.props.requestUrl;
             keyWord = this.props.keyWord;
         }
         return {
+            comicId: this.props.comicId,
+            chapterId: this.props.chapterId,
             canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh, //可以刷新
             canLoadNext: this.props.canLoadNext == undefined ? true : this.props.canLoadNext, //可以载入下一页
-            canFilter: this.props.canFilter == undefined ? false : this.props.canFilter,//可以过滤
-            beforeFilterItems: null, //过滤前的临时数据,初始为null,如果什么源数据都没有将会变成[]
             isLoadingTail: false, //是否还在读取
             isRefreshing: false, //是否在刷新是否还在读取
             width: width, //当前宽度
-            items: this.props.items == undefined ? undefined : this.props.items, //漫画列表
-            dataSource: this.props.items == undefined ? null : new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.props.items),
+            items: this.props.items == undefined ? undefined : this.props.items, //图片列表
+            dataSource: this.props.items == undefined ? null : new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.props.items),//数据源
             loadNext: false, //是否载入下一页
             keyWord: keyWord //搜索关键字
         };
@@ -94,43 +94,6 @@ var Home = React.createClass({
     },
 
     /**
-     * 当进行过滤的时候
-     * @param val
-     * @private
-     */
-    _onFilter: function (val) {
-        //先保存一发初始值
-        if (this.state.beforeFilterItems == null) {
-            this.setState({
-                beforeFilterItems: this.state.items,
-
-            });
-        }
-        //如果关键词清空状态下,读取原始数据
-        if (val == undefined || val == null || val == "") {
-            this.setState({
-                items: this.state.beforeFilterItems,
-                dataSource: this.state.dataSource.cloneWithRows(this.state.beforeFilterItems),
-            });
-        }
-        //否则过滤
-        else {
-            var filterData = [];
-            for (var i = 0; i < this.state.beforeFilterItems.length; i++) {
-                if (this.state.beforeFilterItems[i].comicTitle.indexOf(val) != -1) {
-                    filterData.push(this.state.beforeFilterItems[i]);
-                }
-            }
-            this.clearData();
-            this.setState({
-                items: filterData,
-                dataSource: this.state.dataSource.cloneWithRows(filterData),
-            });
-        }
-
-    },
-
-    /**
      * 清空当前数据
      */
     clearData: function () {
@@ -165,7 +128,9 @@ var Home = React.createClass({
                     key: Util.key,
                     page: page,
                     keyWord: keyWord,
-                    token: token
+                    token: token,
+                    comicId: that.state.comicId,
+                    chapterId: that.state.chapterId
                 };
                 var fetchOptions = {
                     method: 'POST',
@@ -179,15 +144,23 @@ var Home = React.createClass({
                 if (items == undefined) {
                     items = [];
                 }
-                fetch(REQUEST_COMIC_URL, fetchOptions)
+                fetch(REQUEST_CHAPTER_URL, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
                         //创建ListView
                         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+                        //判断之后是否还需要载入
+                        var canLoadNext = true;
+                        var data = responseText.data;
+                        if (data.isEnd == undefined || data.isEnd == true) {
+                            canLoadNext = false;
+                        }
+                        var content = responseText.data.chapterContent;
                         that.setState({
-                            items: items.concat(responseText.data),
-                            dataSource: ds.cloneWithRows(items.concat(responseText.data)),
-                            loadNext: false
+                            items: items.concat(content),
+                            dataSource: ds.cloneWithRows(items.concat(content)),
+                            loadNext: false,
+                            canLoadNext: canLoadNext
                         });
                     }).done();
             } else {
@@ -196,25 +169,17 @@ var Home = React.createClass({
         });
     },
 
-    /**
-     * 载入页
-     * @returns {XML}
-     */
     renderLoadingView: function () {
         return (
             <View style={styles.container}>
                 <Text style={{alignSelf: 'stretch',textAlign: 'center',fontSize:14,marginTop:10,marginBottom:10}}>
-                    正在读取漫画中...
+                    正在读取章节中...
                 </Text>
                 <ActivityIndicatorIOS size="large" color="#268DFF"/>
             </View>
         );
     },
 
-    /**
-     * 查询无结果
-     * @returns {XML}
-     */
     renderNoItemView: function () {
         return (
             <View style={styles.container}>
@@ -226,10 +191,6 @@ var Home = React.createClass({
         );
     },
 
-    /**
-     * 加载中
-     * @returns {XML}
-     */
     renderLoadingNextView: function () {
         if (!this.state.loadNext) {
             return;
@@ -244,16 +205,15 @@ var Home = React.createClass({
     },
 
     /**
-     * 每一行的数据
-     * @param rowData 是一个JSONArray 包含对象
+     * 每一行的数据,这里是一个Image
+     * @param rowData 是JSONArray中的一个单独的链接
      * @returns {XML}
      */
     renderRow: function (rowData) {
-        return (<ItemBlock
-            key={rowData.comicId}
-            comic={rowData}
-            width={this.state.width}
-            nav={this.props.navigator}
+        console.log(rowData);
+        return ( <Image
+            style={[styles.img]}
+            source={{uri: rowData}}
         />);
     },
 
@@ -266,7 +226,7 @@ var Home = React.createClass({
             refreshing={this.state.isRefreshing}
             onRefresh={this._onRefresh}
             tintColor="#ff0000"
-            title="刷新中..."
+            title="重新读取章节..."
             colors={['#ff0000', '#00ff00', '#0000ff']}
             progressBackgroundColor="#ffff00"
         />);
@@ -323,27 +283,11 @@ var Home = React.createClass({
     },
 
     /**
-     * 渲染过滤搜索框
-     * @returns {XML}
-     */
-    renderFilter: function () {
-        var placeHolder = "在专题内搜索漫画..";
-        return (<View style={{height:35}}>
-            <TextInput style={styles.search} placeholder={placeHolder} clearButtonMode="always"
-                       autoCapitalize="none" autoCorrect={false} onChangeText={(val)=>this._onFilter(val)}
-                       onSubmitEditing={(val)=>this._onFilter(val.nativeEvent.text)}/>
-        </View>)
-    },
-
-    /**
      * 渲染界面
      * @returns {*}
      */
     render: function () {
         var extra = null;
-        if (this.state.canFilter) {
-            extra = this.renderFilter();
-        }
         if (!this.state.items || this.state.items == undefined) {
             return this.renderLoadingView();
         }
@@ -371,6 +315,13 @@ var styles = StyleSheet.create({
         flex: 1,
         marginBottom: 80,
     },
+    img: {
+        width: Util.size.width,
+        borderRadius: 4,
+        marginLeft: 0,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
     search: {
         fontSize: 14,
         height: 35,
@@ -386,4 +337,4 @@ var styles = StyleSheet.create({
     }
 });
 
-module.exports = Home;
+module.exports = Chapter;
