@@ -317,10 +317,7 @@ var styles = StyleSheet.create({
     },
     img: {
         width: Util.size.width,
-        borderRadius: 4,
-        marginLeft: 0,
-        alignItems: 'center',
-        justifyContent: 'center',
+        height: Util.size.height
     },
     search: {
         fontSize: 14,
