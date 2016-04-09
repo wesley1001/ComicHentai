@@ -24,7 +24,7 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		DA1612911C96CE73009F2F7E /* Thumbnails in Resources */ = {isa = PBXBuildFile; fileRef = DA1612901C96CE73009F2F7E /* Thumbnails */; };
 		DA1612B51C96D70F009F2F7E /* libRCTAdSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA1612B41C96D704009F2F7E /* libRCTAdSupport.a */; };
-		DA63C9041CB8CC7400688947 /* RCTOrientation in Resources */ = {isa = PBXBuildFile; fileRef = DA63C9031CB8CC7400688947 /* RCTOrientation */; };
+		DA63C90B1CB8D1DB00688947 /* libRCTOrientationListener.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA63C90A1CB8D1D100688947 /* libRCTOrientationListener.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -112,6 +112,13 @@
 			remoteGlobalIDString = 832C81801AAF6DEF007FA2F7;
 			remoteInfo = RCTAdSupport;
 		};
+		DA63C9091CB8D1D100688947 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DA63C9051CB8D1D100688947 /* RCTOrientationListener.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = B23A0BEA1BA74C2500BD7916;
+			remoteInfo = RCTOrientationListener;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -139,7 +146,7 @@
 		DA1612901C96CE73009F2F7E /* Thumbnails */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Thumbnails; path = "/Users/hope6537/Documents/WorkSpace/React-Native-App/address_book/iOS/../../../react-native/Examples/UIExplorer/Thumbnails"; sourceTree = "<absolute>"; };
 		DA1612A21C96D022009F2F7E /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		DA1612AF1C96D704009F2F7E /* RCTAdSupport.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAdSupport.xcodeproj; path = "../node_modules/react-native/Libraries/AdSupport/RCTAdSupport.xcodeproj"; sourceTree = "<group>"; };
-		DA63C9031CB8CC7400688947 /* RCTOrientation */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RCTOrientation; path = "../node_modules/react-native-orientation/RCTOrientation"; sourceTree = "<group>"; };
+		DA63C9051CB8D1D100688947 /* RCTOrientationListener.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTOrientationListener.xcodeproj; path = "../node_modules/react-native-orientation-listener/RCTOrientationListener.xcodeproj"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -154,6 +161,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA63C90B1CB8D1DB00688947 /* libRCTOrientationListener.a in Frameworks */,
 				DA1612B51C96D70F009F2F7E /* libRCTAdSupport.a in Frameworks */,
 				146834051AC3E58100842450 /* libReact.a in Frameworks */,
 				00C302E51ABCBA2D00DB3ED1 /* libRCTActionSheet.a in Frameworks */,
@@ -247,7 +255,6 @@
 		13B07FAE1A68108700A75B9A /* ComicHentai */ = {
 			isa = PBXGroup;
 			children = (
-				DA63C9031CB8CC7400688947 /* RCTOrientation */,
 				DA1612901C96CE73009F2F7E /* Thumbnails */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -279,6 +286,7 @@
 		832341AE1AAA6A7D00B99B32 /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
+				DA63C9051CB8D1D100688947 /* RCTOrientationListener.xcodeproj */,
 				DA1612AF1C96D704009F2F7E /* RCTAdSupport.xcodeproj */,
 				146833FF1AC3E56700842450 /* React.xcodeproj */,
 				00C302A71ABCB8CE00DB3ED1 /* RCTActionSheet.xcodeproj */,
@@ -328,6 +336,14 @@
 			isa = PBXGroup;
 			children = (
 				DA1612B41C96D704009F2F7E /* libRCTAdSupport.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		DA63C9061CB8D1D100688947 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DA63C90A1CB8D1D100688947 /* libRCTOrientationListener.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -424,6 +440,10 @@
 				{
 					ProductGroup = 00C302D41ABCB9D200DB3ED1 /* Products */;
 					ProjectRef = 00C302D31ABCB9D200DB3ED1 /* RCTNetwork.xcodeproj */;
+				},
+				{
+					ProductGroup = DA63C9061CB8D1D100688947 /* Products */;
+					ProjectRef = DA63C9051CB8D1D100688947 /* RCTOrientationListener.xcodeproj */;
 				},
 				{
 					ProductGroup = 139105B71AF99BAD00B5F7CC /* Products */;
@@ -532,6 +552,13 @@
 			remoteRef = DA1612B31C96D704009F2F7E /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		DA63C90A1CB8D1D100688947 /* libRCTOrientationListener.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libRCTOrientationListener.a;
+			remoteRef = DA63C9091CB8D1D100688947 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -549,7 +576,6 @@
 				DA1612911C96CE73009F2F7E /* Thumbnails in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
-				DA63C9041CB8CC7400688947 /* RCTOrientation in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

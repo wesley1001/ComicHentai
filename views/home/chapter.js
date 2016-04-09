@@ -4,6 +4,7 @@
  */
 
 var React = require('react-native');
+var Orientation = require('react-native-orientation-listener');
 var Util = require('./../util');
 var Service = require('./../service')
 
@@ -54,12 +55,42 @@ var Chapter = React.createClass({
         };
     },
 
+    _setOrientation(data) {
+        this.setState({
+            orientation: evt.orientation,
+            device: evt.device
+        });
+    },
+
+    componentDidMount: function () {
+        Orientation.getOrientation(
+            (orientation, device) => {
+                console.log(orientation, device);
+            }
+        );
+        Orientation.addListener(this._setOrientation);
+    },
+
+    componentWillUnmount: function () {
+        Orientation.removeListener(this._setOrientation);
+    },
+
     /**
      * 在渲染前读取
      */
     componentWillMount: function () {
         this.setState({keyWord: this.props.keyWord});
         this.fetchData(0, this.state.keyWord);
+        //The getOrientation method is async. It happens sometimes that
+        //you need the orientation at the moment the js starts running on device.
+        //getInitialOrientation returns directly because its a constant set at the
+        //beginning of the js code.
+        var initial = Orientation.getInitialOrientation();
+        if (initial === 'PORTRAIT') {
+            console.log("竖屏-1");
+        } else {
+            console.log("横屏-2");
+        }
     },
 
 
