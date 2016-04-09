@@ -51,25 +51,20 @@ var Chapter = React.createClass({
             items: this.props.items == undefined ? undefined : this.props.items, //图片列表
             dataSource: this.props.items == undefined ? null : new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.props.items),//数据源
             loadNext: false, //是否载入下一页
-            keyWord: keyWord //搜索关键字
+            keyWord: keyWord, //搜索关键字
+            device: "iPhone",//设备类型
+            orientation: 'PORTRAIT'//默认竖屏
         };
     },
 
     _setOrientation(data) {
+        console.log(data.orientation, data.device);
         this.setState({
-            orientation: evt.orientation,
-            device: evt.device
+            orientation: data.orientation,
+            device: data.device
         });
     },
 
-    componentDidMount: function () {
-        Orientation.getOrientation(
-            (orientation, device) => {
-                console.log(orientation, device);
-            }
-        );
-        Orientation.addListener(this._setOrientation);
-    },
 
     componentWillUnmount: function () {
         Orientation.removeListener(this._setOrientation);
@@ -79,18 +74,18 @@ var Chapter = React.createClass({
      * 在渲染前读取
      */
     componentWillMount: function () {
+        var that = this;
+        Orientation.getOrientation(
+            (orientation, device) => {
+                that.setState({
+                    orientation: orientation,
+                    device: device
+                });
+            }
+        );
+        Orientation.addListener(this._setOrientation);
         this.setState({keyWord: this.props.keyWord});
         this.fetchData(0, this.state.keyWord);
-        //The getOrientation method is async. It happens sometimes that
-        //you need the orientation at the moment the js starts running on device.
-        //getInitialOrientation returns directly because its a constant set at the
-        //beginning of the js code.
-        var initial = Orientation.getInitialOrientation();
-        if (initial === 'PORTRAIT') {
-            console.log("竖屏-1");
-        } else {
-            console.log("横屏-2");
-        }
     },
 
 
@@ -241,11 +236,20 @@ var Chapter = React.createClass({
      * @returns {XML}
      */
     renderRow: function (rowData) {
-        console.log(rowData);
-        return ( <Image
-            style={[styles.img]}
-            source={{uri: rowData}}
-        />);
+        var orientation = this.state.orientation;
+        if (orientation == 'PORTRAIT' || orientation == undefined) {
+            return ( <Image
+                style={[styles.img]}
+                source={{uri: rowData}}
+            />);
+        }
+        else if (orientation == 'LANDSCAPE') {
+            return ( <Image
+                style={[styles.img_land_scape]}
+                source={{uri: rowData}}
+            />);
+        }
+
     },
 
     /**
@@ -349,6 +353,10 @@ var styles = StyleSheet.create({
     img: {
         width: Util.size.width,
         height: Util.size.height
+    },
+    img_land_scape: {
+        width: Math.floor(Util.size.height),
+        height: Math.floor(Util.size.height),
     },
     search: {
         fontSize: 14,
