@@ -24,6 +24,7 @@
 		832341BD1AAA6AB300B99B32 /* libRCTText.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 832341B51AAA6A8300B99B32 /* libRCTText.a */; };
 		DA1612911C96CE73009F2F7E /* Thumbnails in Resources */ = {isa = PBXBuildFile; fileRef = DA1612901C96CE73009F2F7E /* Thumbnails */; };
 		DA1612B51C96D70F009F2F7E /* libRCTAdSupport.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DA1612B41C96D704009F2F7E /* libRCTAdSupport.a */; };
+		DA63C9041CB8CC7400688947 /* RCTOrientation in Resources */ = {isa = PBXBuildFile; fileRef = DA63C9031CB8CC7400688947 /* RCTOrientation */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -138,6 +139,7 @@
 		DA1612901C96CE73009F2F7E /* Thumbnails */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Thumbnails; path = "/Users/hope6537/Documents/WorkSpace/React-Native-App/address_book/iOS/../../../react-native/Examples/UIExplorer/Thumbnails"; sourceTree = "<absolute>"; };
 		DA1612A21C96D022009F2F7E /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
 		DA1612AF1C96D704009F2F7E /* RCTAdSupport.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RCTAdSupport.xcodeproj; path = "../node_modules/react-native/Libraries/AdSupport/RCTAdSupport.xcodeproj"; sourceTree = "<group>"; };
+		DA63C9031CB8CC7400688947 /* RCTOrientation */ = {isa = PBXFileReference; lastKnownFileType = folder; name = RCTOrientation; path = "../node_modules/react-native-orientation/RCTOrientation"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -245,6 +247,7 @@
 		13B07FAE1A68108700A75B9A /* ComicHentai */ = {
 			isa = PBXGroup;
 			children = (
+				DA63C9031CB8CC7400688947 /* RCTOrientation */,
 				DA1612901C96CE73009F2F7E /* Thumbnails */,
 				008F07F21AC5B25A0029DE68 /* main.jsbundle */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
@@ -546,6 +549,7 @@
 				DA1612911C96CE73009F2F7E /* Thumbnails in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				13B07FBD1A68108700A75B9A /* LaunchScreen.xib in Resources */,
+				DA63C9041CB8CC7400688947 /* RCTOrientation in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
