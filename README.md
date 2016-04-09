@@ -15,9 +15,12 @@ This app has 3 modules
 
 ###TODOList:
 
-1.注册机制 Easy
-2.上传头像+修改个人信息 Normal
-3.添加收藏 Easy
-4.用户收藏专题-需要用到下面的底边TabBar Hard
-5.专题详情,漫画详情的的底部TabBarIOS变动与漫画章节时的TabBarIOS隐藏 Hard
-6.漫画章节的图片浏览器 Extreme Hard
+- [ ] 注册机制 Easy
+- [ ] 上传头像+修改个人信息 Normal
+- [ ] 漫画收藏按钮 Easy
+- [ ] 专题详情,漫画详情的的底部TabBarIOS变动与漫画章节时的TabBarIOS隐藏 Hard
+- [ ] 漫画章节的图片浏览器 Extreme Hard
+- [ ] 专题,漫画列表按照顶部状态栏展示 Hard
+- [ ] JS端AES解密
+- [ ] Android Support Hard
+- [ ] 重构混乱代码 Normal
