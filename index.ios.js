@@ -32,6 +32,9 @@ var ComicHentai = React.createClass({
         };
     },
     _selectTab: function (tabName) {
+        if(tabName == "home"){
+            console.log("back to home");
+        }
         this.setState({
             selectedTab: tabName
         });
