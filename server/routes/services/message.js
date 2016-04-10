@@ -102,13 +102,6 @@ var Message = {
         if (page == null || page == undefined) {
             page = 0;
         }
-        if (key !== util.getKey()) {
-            return res.send({
-                status: 0,
-                data: '使用了没有鉴权的key'
-            });
-        }
-
         if (keyWord == undefined) {
             keyWord = ' ';
         }
@@ -165,13 +158,6 @@ var Message = {
         if (page == null || page == undefined) {
             page = 0;
         }
-        if (key !== util.getKey()) {
-            return res.send({
-                status: 0,
-                data: '使用了没有鉴权的key'
-            });
-        }
-
         if (comicId != null && comicId != undefined) {
             console.log("漫画ID:" + comicId);
             fs.readFile(COMIC_TOTAL_PATH, function (err, data) {
@@ -324,13 +310,6 @@ var Message = {
         if (page == null || page == undefined) {
             page = 0;
         }
-        if (key !== util.getKey()) {
-            return res.send({
-                status: 0,
-                data: '使用了没有鉴权的key'
-            });
-        }
-
         if (keyWord == undefined) {
             keyWord = ' ';
         }

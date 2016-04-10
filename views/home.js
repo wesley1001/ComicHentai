@@ -23,8 +23,6 @@ var {
     TouchableHighlight,
     } = React;
 
-var REQUEST_COMIC_URL = Service.host + Service.getComic;
-var PAGE = 0;
 var Home = React.createClass({
 
     /**
@@ -35,11 +33,13 @@ var Home = React.createClass({
         //减去paddingLeft && paddingRight && space
         var width = Math.floor(Util.size.width);
         var keyWord = null;
-        if (this.props.requestUrl != undefined) {
-            REQUEST_COMIC_URL = this.props.requestUrl;
+        console.log(this.props.requestUrl);
+        if (this.props.keyWord != undefined) {
             keyWord = this.props.keyWord;
         }
         return {
+            page: 0,
+            requestUrl: this.props.requestUrl == undefined ? Service.host + Service.getComic : this.props.requestUrl,
             canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh, //可以刷新
             canLoadNext: this.props.canLoadNext == undefined ? true : this.props.canLoadNext, //可以载入下一页
             canFilter: this.props.canFilter == undefined ? false : this.props.canFilter,//可以过滤
@@ -62,6 +62,24 @@ var Home = React.createClass({
         this.fetchData(0, this.state.keyWord);
     },
 
+    componentWillUnmount: function () {
+        console.log("unmount");
+        this.setState({
+            requestUrl: Service.host + Service.getComic,
+            canRefresh: true, //可以刷新
+            canLoadNext: true, //可以载入下一页
+            canFilter: false,//可以过滤
+            beforeFilterItems: null, //过滤前的临时数据,初始为null,如果什么源数据都没有将会变成[]
+            isLoadingTail: false, //是否还在读取
+            isRefreshing: false, //是否在刷新是否还在读取
+            width: Math.floor(Util.size.width), //当前宽度
+            items: undefined, //漫画列表
+            dataSource: null,
+            loadNext: false, //是否载入下一页
+            keyWord: null //搜索关键字
+        });
+    },
+
 
     /**
      * 刷新时的操作
@@ -71,8 +89,7 @@ var Home = React.createClass({
         if (!this.state.canRefresh) {
             return;
         }
-        PAGE = 0;
-        this.setState({isRefreshing: true});
+        this.setState({page: 0, isRefreshing: true});
         setTimeout(() => {
             // prepend 10 items
             this.clearData();
@@ -134,8 +151,8 @@ var Home = React.createClass({
      * 清空当前数据
      */
     clearData: function () {
-        PAGE = 0;
         this.setState({
+            page: 0,
             items: undefined,
             dataSource: this.state.dataSource.cloneWithRows([]),
         });
@@ -160,7 +177,7 @@ var Home = React.createClass({
         var that = this;
         //TODO:之后去掉
         AsyncStorage.getItem('token', function (err, token) {
-            if (!err && token) {
+            if (!err) {
                 var data = {
                     key: Util.key,
                     page: page,
@@ -179,12 +196,13 @@ var Home = React.createClass({
                 if (items == undefined) {
                     items = [];
                 }
-                fetch(REQUEST_COMIC_URL, fetchOptions)
+                fetch(that.state.requestUrl, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
                         //创建ListView
                         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
                         that.setState({
+                            page: page + 1,
                             items: items.concat(responseText.data),
                             dataSource: ds.cloneWithRows(items.concat(responseText.data)),
                             loadNext: false
@@ -318,8 +336,7 @@ var Home = React.createClass({
             isLoadingTail: false
         });
         this._onLoadNext();
-        PAGE += 1;
-        this.fetchData(PAGE, this.state.keyWord);
+        this.fetchData(this.state.page, this.state.keyWord);
     },
 
     /**

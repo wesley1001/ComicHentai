@@ -10,10 +10,64 @@ var User = {
         app.post('/user/special', this.getSpecial);
         app.post('/user/favorite', this.getFavorite);
         app.post('/user/create', this.addUser);
+        app.post('/user/register', this.registerUser);
         app.post('/user/login', this.login);
         app.post('/user/login/token', this.loginByToken);
         app.post('/user/password/update', this.updatePassword);
         app.post('/user/delete', this.deleteUser);
+    },
+
+    /**
+     * 注册
+     * @param req
+     * @param res
+     */
+    registerUser: function (req, res) {
+        var nickname = req.param('nickname');
+        var password = util.md5(req.param('password'));
+        var email = req.param('email');
+        var deviceId = req.param('deviceId');
+        console.log(nickname);
+        console.log(password);
+        console.log(email);
+        console.log(deviceId);
+        var token = util.guid() + deviceId;
+        if (!nickname || !password || !email || !deviceId) {
+            return res.send({
+                status: 0,
+                data: '缺少必要参数'
+            });
+        }
+
+        try {
+            var content = JSON.parse(fs.readFileSync(USER_PATH));
+            var obj = {
+                "userid": util.guid(),
+                "username": '',
+                "password": password,
+                "nickname": nickname,
+                "partment": '',
+                "tel": '',
+                "email": email,
+                "tag": '',
+                "creater": '',
+                "time": new Date(),
+                "token": token
+            };
+            content.push(obj);
+            //更新文件
+            fs.writeFileSync(USER_PATH, JSON.stringify(content));
+            delete obj.password;
+            return res.send({
+                status: 1,
+                data: obj
+            });
+        } catch (e) {
+            return res.send({
+                status: 0,
+                err: e
+            });
+        }
     },
 
     //获取用户信息

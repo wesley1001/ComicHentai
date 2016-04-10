@@ -4,6 +4,7 @@
  */
 
 var React = require('react-native');
+var Orientation = require('react-native-orientation-listener');
 var Util = require('./../util');
 var Service = require('./../service')
 
@@ -26,6 +27,8 @@ var {
 var REQUEST_CHAPTER_URL = Service.host + Service.getChapter;
 var PAGE = 0;
 var Chapter = React.createClass({
+
+    orientationListener: null,
 
     /**
      * 初始化状态
@@ -50,14 +53,42 @@ var Chapter = React.createClass({
             items: this.props.items == undefined ? undefined : this.props.items, //图片列表
             dataSource: this.props.items == undefined ? null : new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2}).cloneWithRows(this.props.items),//数据源
             loadNext: false, //是否载入下一页
-            keyWord: keyWord //搜索关键字
+            keyWord: keyWord, //搜索关键字
+            device: "iPhone",//设备类型
+            orientation: 'PORTRAIT'//默认竖屏
         };
+    },
+
+    _setOrientation(data) {
+        console.log(data.orientation, data.device);
+        this.setState({
+            orientation: data.orientation,
+            device: data.device
+        });
+    },
+
+    componentDidMount(){
+        var that = this;
+        Orientation.getOrientation(
+            (orientation, device) => {
+                that.setState({
+                    orientation: orientation,
+                    device: device
+                });
+            }
+        );
+        this.orientationListener = Orientation.addListener(this._setOrientation);
+    },
+
+    componentWillUnmount() {
+        this.orientationListener.remove();
     },
 
     /**
      * 在渲染前读取
      */
     componentWillMount: function () {
+
         this.setState({keyWord: this.props.keyWord});
         this.fetchData(0, this.state.keyWord);
     },
@@ -210,11 +241,20 @@ var Chapter = React.createClass({
      * @returns {XML}
      */
     renderRow: function (rowData) {
-        console.log(rowData);
-        return ( <Image
-            style={[styles.img]}
-            source={{uri: rowData}}
-        />);
+        var orientation = this.state.orientation;
+        if (orientation == 'PORTRAIT' || orientation == "UNKNOWN" || orientation == undefined) {
+            return ( <Image
+                style={[styles.img]}
+                source={{uri: rowData}}
+            />);
+        }
+        else if (orientation == 'LANDSCAPE') {
+            return ( <Image
+                style={[styles.img_land_scape]}
+                source={{uri: rowData}}
+            />);
+        }
+
     },
 
     /**
@@ -317,10 +357,11 @@ var styles = StyleSheet.create({
     },
     img: {
         width: Util.size.width,
-        borderRadius: 4,
-        marginLeft: 0,
-        alignItems: 'center',
-        justifyContent: 'center',
+        height: Util.size.height
+    },
+    img_land_scape: {
+        width: Math.floor(Util.size.height),
+        height: Math.floor(Util.size.height),
     },
     search: {
         fontSize: 14,
