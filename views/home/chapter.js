@@ -28,6 +28,8 @@ var REQUEST_CHAPTER_URL = Service.host + Service.getChapter;
 var PAGE = 0;
 var Chapter = React.createClass({
 
+    orientationListener: null,
+
     /**
      * 初始化状态
      * @returns {{canRefresh: boolean, canLoadNext: boolean, isLoadingTail: boolean, isRefreshing: boolean, width: number, items: *, dataSource: null, loadNext: boolean, keyWord: *}}
@@ -65,15 +67,7 @@ var Chapter = React.createClass({
         });
     },
 
-
-    componentWillUnmount: function () {
-        Orientation.removeListener(this._setOrientation);
-    },
-
-    /**
-     * 在渲染前读取
-     */
-    componentWillMount: function () {
+    componentDidMount(){
         var that = this;
         Orientation.getOrientation(
             (orientation, device) => {
@@ -83,7 +77,18 @@ var Chapter = React.createClass({
                 });
             }
         );
-        Orientation.addListener(this._setOrientation);
+        this.orientationListener = Orientation.addListener(this._setOrientation);
+    },
+
+    componentWillUnmount() {
+        this.orientationListener.remove();
+    },
+
+    /**
+     * 在渲染前读取
+     */
+    componentWillMount: function () {
+
         this.setState({keyWord: this.props.keyWord});
         this.fetchData(0, this.state.keyWord);
     },
@@ -237,7 +242,7 @@ var Chapter = React.createClass({
      */
     renderRow: function (rowData) {
         var orientation = this.state.orientation;
-        if (orientation == 'PORTRAIT' || orientation == undefined) {
+        if (orientation == 'PORTRAIT' || orientation == "UNKNOWN" || orientation == undefined) {
             return ( <Image
                 style={[styles.img]}
                 source={{uri: rowData}}
