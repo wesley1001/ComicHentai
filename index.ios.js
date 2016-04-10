@@ -6,6 +6,7 @@ var About = require('./views/about');
 var User = require('./views/user');
 var Explore = require('./views/explore');
 var Search = require('./views/search');
+var Service = require('./views/service')
 
 var {
     StyleSheet,
@@ -36,65 +37,11 @@ var ComicHentai = React.createClass({
         });
     },
 
-    _addNavigator: function (component, title) {
-        var data = null;
-        if (title === '探索') {
-            data = this.state.data;
-        }
-        var initialRoute;
-        if (title == "漫画绅士") {
-            initialRoute = {
-                component: component,
-                title: title,
-                rightButtonIcon: require('image!31'),
-                onRightButtonPress: this._toSearchComic
-            }
-            return (<NavigatorIOS
-                ref={"comic_nav"}
-                style={{flex:1}}
-                barTintColor='#007AFF'
-                titleTextColor="#fff"
-                tintColor="#fff"
-                translucent={false}
-                initialRoute={initialRoute}
-            />)
-        }
-        else if (title == "探索") {
-            initialRoute = {
-                component: component,
-                title: title,
-                rightButtonIcon: require('image!31'),
-                onRightButtonPress: this._toSearchSpecial
-            }
-            return (<NavigatorIOS
-                ref={"explore_nav"}
-                style={{flex:1}}
-                barTintColor='#007AFF'
-                titleTextColor="#fff"
-                tintColor="#fff"
-                translucent={false}
-                initialRoute={initialRoute}
-            />)
-        }
-        else {
-            initialRoute = {component: component, title: title, passProps: {data: data}};
-            return (<NavigatorIOS
-                style={{flex:1}}
-                barTintColor='#007AFF'
-                titleTextColor="#fff"
-                tintColor="#fff"
-                translucent={false}
-                initialRoute={initialRoute}
-            />)
-        }
-
-    },
-
     _toSearchComic: function () {
-        if (this.refs.comic_nav == undefined) {
+        if (this.refs.nav == undefined) {
             return;
         }
-        this.refs.comic_nav.push({
+        this.refs.nav.push({
             component: Search,
             title: '搜索页',
             passProps: {type: "comic"}
@@ -102,15 +49,79 @@ var ComicHentai = React.createClass({
     },
 
     _toSearchSpecial: function () {
-        if (this.refs.explore_nav == undefined) {
+        if (this.refs.nav == undefined) {
             return;
         }
-        this.refs.explore_nav.push({
+        this.refs.nav.push({
             component: Search,
             title: '搜索页',
             passProps: {type: "special"}
         });
     },
+
+    renderHome: function () {
+        var initialRoute = {
+            component: Home,
+            title: "漫画绅士",
+            rightButtonIcon: require('image!31'),
+            onRightButtonPress: this._toSearchComic,
+            passProps: {
+                requestUrl: Service.host + Service.getComic
+            }
+        }
+        return (<NavigatorIOS
+            ref={"nav"}
+            style={{flex:1}}
+            barTintColor='#007AFF'
+            titleTextColor="#fff"
+            tintColor="#fff"
+            translucent={false}
+            initialRoute={initialRoute}
+        />)
+    },
+
+    renderExplore: function () {
+        var initialRoute = {
+            component: Explore,
+            title: "探索",
+            rightButtonIcon: require('image!31'),
+            onRightButtonPress: this._toSearchSpecial
+        }
+        return (<NavigatorIOS
+            ref={"nav"}
+            style={{flex:1}}
+            barTintColor='#007AFF'
+            titleTextColor="#fff"
+            tintColor="#fff"
+            translucent={false}
+            initialRoute={initialRoute}
+        />)
+    },
+
+    renderUser: function () {
+        var initialRoute = {component: User, title: "我的",};
+        return (<NavigatorIOS
+            style={{flex:1}}
+            barTintColor='#007AFF'
+            titleTextColor="#fff"
+            tintColor="#fff"
+            translucent={false}
+            initialRoute={initialRoute}
+        />)
+    },
+
+    renderAbout: function () {
+        var initialRoute = {component: About, title: "关于",};
+        return (<NavigatorIOS
+            style={{flex:1}}
+            barTintColor='#007AFF'
+            titleTextColor="#fff"
+            tintColor="#fff"
+            translucent={false}
+            initialRoute={initialRoute}
+        />)
+    },
+
 
     render: function () {
         navigator = this.props.navigator;
@@ -124,7 +135,7 @@ var ComicHentai = React.createClass({
                             selected={this.state.selectedTab === 'home'}
                             onPress={this._selectTab.bind(this, 'home')}
                         >
-                            {this._addNavigator(Home, '漫画绅士')}
+                            {this.renderHome()}
                         </TabBarIOS.Item>
 
                         <TabBarIOS.Item
@@ -133,7 +144,7 @@ var ComicHentai = React.createClass({
                             selected={this.state.selectedTab === 'explore'}
                             onPress={this._selectTab.bind(this, 'explore')}
                         >
-                            {this._addNavigator(Explore, '探索')}
+                            {this.renderExplore()}
                         </TabBarIOS.Item>
 
                         <TabBarIOS.Item
@@ -142,7 +153,7 @@ var ComicHentai = React.createClass({
                             selected={this.state.selectedTab === 'user'}
                             onPress={this._selectTab.bind(this, 'user')}
                         >
-                            {this._addNavigator(User, '我的')}
+                            {this.renderUser()}
                         </TabBarIOS.Item>
 
                         <TabBarIOS.Item
@@ -151,7 +162,7 @@ var ComicHentai = React.createClass({
                             selected={this.state.selectedTab === 'about'}
                             onPress={this._selectTab.bind(this, 'about')}
                         >
-                            {this._addNavigator(About, '关于')}
+                            {this.renderAbout()}
                         </TabBarIOS.Item>
                     </TabBarIOS>
                 </View>
