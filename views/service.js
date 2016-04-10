@@ -1,6 +1,7 @@
 var Service = {
     host: 'http://ding.hope6537.com:3000',
     login: '/user/login',
+    register: '/user/register',
     loginByToken: '/user/login/token',
     getUser: '/user/get',
     createUser: '/user/create',

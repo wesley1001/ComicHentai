@@ -7,7 +7,7 @@ var Favorite = require('./user/favorite');
 var History = require('./user/history');
 var Profile = require('./user/profile');
 var Special = require('./user/special');
-
+var AdSupportIOS = require('AdSupportIOS');
 
 var {
     View,
@@ -39,6 +39,7 @@ var User = React.createClass({
                 opacity: 1
             },
             isLogin: false,
+            showRegister: false,
             isLoadingShow: false
         };
     },
@@ -114,6 +115,111 @@ var User = React.createClass({
         var password = val;
         this.setState({
             password: password
+        });
+    },
+
+    _backToLogin: function () {
+        this.setState({
+            showRegister: false
+        });
+    },
+
+    _swapToRegister: function () {
+        this.setState({
+            showRegister: true
+        });
+    },
+
+
+    _getNickName: function (val) {
+        this.setState({
+            nickname: val
+        });
+    },
+
+
+    /**
+     * 注册操作
+     * @private
+     */
+    _register: function () {
+        var email = this.state.email;
+        var nickname = this.state.nickname;
+        var password = this.state.password;
+        var path = Service.host + Service.register;
+        var that = this;
+        //隐藏登录页 & 加载loading
+        that.setState({
+            showLogin: {
+                height: 0,
+                width: 0,
+                flex: 0,
+            },
+            isLoadingShow: true
+        });
+
+        AdSupportIOS.getAdvertisingTrackingEnabled(function () {
+            AdSupportIOS.getAdvertisingId(function (deviceId) {
+                Util.post(path, {
+                    email: email,
+                    nickname: nickname,
+                    password: password,
+                    deviceId: deviceId,
+                }, function (data) {
+                    if (data.status) {
+                        var user = data.data;
+                        //加入数据到本地
+                        AsyncStorage.multiSet([
+                            ['username', user.username],
+                            ['token', user.token],
+                            ['userid', user.userid],
+                            ['email', user.email],
+                            ['tel', user.tel],
+                            ['partment', user.partment],
+                            ['tag', user.tag],
+                        ], function (err) {
+                            if (!err) {
+                                AlertIOS.alert('注册', '注册成功!正在跳转');
+                                that.setState({
+                                    showLogin: {
+                                        height: 0,
+                                        width: 0,
+                                        flex: 0,
+                                    },
+                                    showIndex: {
+                                        flex: 1,
+                                        opacity: 1
+                                    },
+                                    isLogin: true,
+                                    showRegister: false,
+                                    isLoadingShow: false
+                                });
+                            }
+                        });
+
+                    } else {
+                        AlertIOS.alert('错误', '用户名或者密码错误');
+                        that.setState({
+                            showLogin: {
+                                flex: 1,
+                                opacity: 1
+                            },
+                            showIndex: {
+                                height: 0,
+                                width: 0,
+                                flex: 0,
+                            },
+                            isLogin: false,
+                            isLoadingShow: false,
+                            showRegister: true,
+                        });
+                    }
+                });
+            }, function () {
+                AlertIOS.alert('设置', '无法获取设备唯一标识');
+            });
+        }, function () {
+            AlertIOS.alert('设置', '无法获取设备唯一标识，请关闭设置->隐私->广告->限制广告跟踪');
         });
     },
 
@@ -249,6 +355,33 @@ var User = React.createClass({
     },
 
     renderLogin: function () {
+        var buttons = null;
+        var nickname = null;
+        if (this.state.showRegister) {
+            nickname = (<View style={styles.inputRow}>
+                <Text>昵称</Text><TextInput style={styles.input} placeholder="请输入昵称" clearButtonMode="always"
+                                          autoCapitalize="none" autoCorrect={false}
+                                          onChangeText={this._getNickName}/>
+            </View>);
+            buttons = ( <View>
+                <TouchableHighlight underlayColor="#fff" style={styles.btn} onPress={this._register}>
+                    <Text style={{color:'#fff'}}>完成注册</Text>
+                </TouchableHighlight>
+                <TouchableHighlight underlayColor="#fff" style={styles.btn} onPress={this._backToLogin}>
+                    <Text style={{color:'#fff'}}>取消</Text>
+                </TouchableHighlight>
+            </View>);
+        } else {
+            buttons = (<View>
+                <TouchableHighlight underlayColor="#fff" style={styles.btn} onPress={this._swapToRegister}>
+                    <Text style={{color:'#fff'}}>注册</Text>
+                </TouchableHighlight>
+                <TouchableHighlight underlayColor="#fff" style={styles.btn} onPress={this._login}>
+                    <Text style={{color:'#fff'}}>登录</Text>
+                </TouchableHighlight>
+            </View>);
+        }
+
         return (<ScrollView style={[this.state.showLogin]}>
             <View style={styles.loginContainer}>
                 <View>
@@ -256,35 +389,39 @@ var User = React.createClass({
                 </View>
 
                 <View style={styles.inputRow}>
-                    <Text>邮箱</Text><TextInput style={styles.input} placeholder="请输入邮箱"
+                    <Text>邮箱</Text><TextInput style={styles.input} placeholder="请输入邮箱" clearButtonMode="always"
+                                              autoCapitalize="none" autoCorrect={false}
                                               onChangeText={this._getEmail}/>
                 </View>
+                {nickname}
                 <View style={styles.inputRow}>
                     <Text>密码</Text><TextInput style={styles.input} placeholder="请输入密码" password={true}
+                                              clearButtonMode="always"
+                                              autoCapitalize="none" autoCorrect={false}
                                               onChangeText={this._getPassword}/>
                 </View>
+                {buttons}
 
-                <View>
-                    <TouchableHighlight underlayColor="#fff" style={styles.btn} onPress={this._login}>
-                        <Text style={{color:'#fff'}}>登录</Text>
-                    </TouchableHighlight>
-                </View>
             </View>
         </ScrollView>);
     },
 
     render: function () {
+        var content = null;
+        //如果载入中,只显示载入画面
+        if (this.state.isLoadingShow) {
+            content = (<View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
+                <ActivityIndicatorIOS size="large" color="#268DFF"/>
+            </View>);
+        }
+        else if (!this.state.isLogin) {
+            content = this.renderLogin();
+        } else {
+            content = this.renderUserInfo()
+        }
         return (
             <View style={{flex:1}}>
-                {this.state.isLoadingShow ?
-                    <View style={{flex:1, justifyContent:'center', alignItems:'center'}}>
-                        <ActivityIndicatorIOS size="Large" color="#268DFF"/>
-                    </View> : null
-                }
-                {!this.state.isLogin ?
-                    this.renderLogin() : this.renderUserInfo()
-
-                }
+                {content}
             </View>
         );
     },
@@ -307,7 +444,7 @@ var User = React.createClass({
 });
 
 var styles = StyleSheet.create({
-    loginContainer:{
+    loginContainer: {
         marginTop: 50,
         marginBottom: 150,
         alignItems: 'center',
