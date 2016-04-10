@@ -160,7 +160,7 @@ var Home = React.createClass({
         var that = this;
         //TODO:之后去掉
         AsyncStorage.getItem('token', function (err, token) {
-            if (!err && token) {
+            if (!err) {
                 var data = {
                     key: Util.key,
                     page: page,

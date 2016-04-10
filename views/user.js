@@ -437,8 +437,22 @@ var User = React.createClass({
     },
 
     _clear: function () {
-        this.props.navigator.pop();
         AsyncStorage.clear();
+        AlertIOS.alert('注销', '已退出登录');
+        this.setState({
+            showIndex: {
+                height: 0,
+                opacity: 0
+            },
+            //显示登录界面
+            showLogin: {
+                flex: 1,
+                opacity: 1
+            },
+            isLogin: false,
+            showRegister: false,
+            isLoadingShow: false
+        });
     }
 
 });
