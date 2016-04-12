@@ -15,7 +15,7 @@ This app has 3 modules
 
 ###TODOList:
 
-- [ ] 注册机制 Easy
+- [x] 注册机制 Easy
 - [ ] 上传头像+修改个人信息 Normal
 - [ ] 漫画收藏按钮 Easy
 - [ ] 专题详情,漫画详情的的底部TabBarIOS变动与漫画章节时的TabBarIOS隐藏 Hard
