@@ -4,9 +4,11 @@
  * @type {{host: string, user: {signIn: string, signUp: string, updated: string, volatileUser: string}, welcome: {index: string}, comic: {index: string}, search: {index: string, result: string}, classification: {index: string, details: string}, mine: {index: string, collection: string, special: string, special_content: string, history: string}}}
  */
 var RESTFulService = {
-    host: 'http://ding.hope6537.com:8080',
+    host: 'http://www.hope6537.com:8080',
     user: {
-        signIn: 'user/signIn',
+        signIn: '/user/signIn',
+        register: '/user/register',
+        login: '/user/login',
         signUp: '/user/signUp',
         updated: "/user/updated",
         volatileUser: 'user/volatileUser',

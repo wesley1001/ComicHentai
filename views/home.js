@@ -273,7 +273,7 @@ var Home = React.createClass({
                         var pageMap = responseText.pageMap;
                         var dataList = responseText.comic;
                         var success = responseText.success;
-                        var errorMsg = responseText.errorMsg
+                        var errorMsg = responseText.errorMsg;
                         if (success) {
                             that.setState({
                                 pageMap: pageMap,

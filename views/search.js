@@ -4,8 +4,6 @@
  */
 var React = require('react-native');
 var Util = require('./util');
-var Item = require('./message/item');
-var Detail = require('./message/detail');
 var Service = require('./service');
 var Home = require('./home');
 var Explore = require('./explore');

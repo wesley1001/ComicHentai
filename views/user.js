@@ -249,21 +249,26 @@ var User = React.createClass({
      * @private
      */
     fetch_release_register: function (email, nickname, password, deviceId, that) {
-        var path = RESTFulService.host + RESTFulService.user.signUp;
-        Util.post(path, {
-            userInfo: {
-                username: email,
-                email: email,
-                nickname: nickname,
-                password: password
-            },
-            deviceId: deviceId,
-        }, function (data) {
-            if (data.status) {
-                var user = data.data;
+        var path = RESTFulService.host + RESTFulService.user.register;
+        var param = {
+            data: Util.encrypt(JSON.stringify({
+                userInfo: {
+                    username: email,
+                    nickname: nickname,
+                    password: password
+                },
+                deviceId: deviceId
+            }))
+        };
+        console.log(param);
+        Util.post_json(path, param, function (data) {
+            console.log("响应信息为");
+            console.log(data);
+            if (data.success) {
+                var response = data.data;
                 //加入数据到本地
                 AsyncStorage.multiSet([
-                    ['token', user.token],
+                    ['token', response.token],
                     ['deviceId', deviceId],
                 ], function (err) {
                     if (!err) {
@@ -318,11 +323,16 @@ var User = React.createClass({
      */
     fetch_release_login: function (email, password, deviceId, that) {
         var path = RESTFulService.host + RESTFulService.user.signIn;
-        Util.post(path, {
-            username: email,
-            password: password,
-            deviceId: deviceId,
-        }, function (data) {
+        var param = {
+            data: Util.encode(JSON.stringify({
+                userInfo: {
+                    username: email,
+                    password: password
+                },
+                deviceId: deviceId
+            }))
+        };
+        Util.post(path, param, function (data) {
             if (data.status) {
                 //加入数据到本地
                 AsyncStorage.multiSet([
@@ -352,8 +362,8 @@ var User = React.createClass({
         this.renderLoadingView(that);
         AdSupportIOS.getAdvertisingTrackingEnabled(function () {
             AdSupportIOS.getAdvertisingId(function (deviceId) {
-                that.fetch_fade_register(email, nickname, password, deviceId, that);
-                //this._fetch_release_register(email, nickname, password, deviceId, that);
+                //that.fetch_fade_register(email, nickname, password, deviceId, that);
+                that.fetch_release_register(email, nickname, password, deviceId, that);
             }, function () {
                 AlertIOS.alert('设置', '无法获取设备唯一标识');
             });
@@ -382,8 +392,8 @@ var User = React.createClass({
         });
         AdSupportIOS.getAdvertisingTrackingEnabled(function () {
             AdSupportIOS.getAdvertisingId(function (deviceId) {
-                that.fetch_fade_login(email, password, deviceId, that);
-                //this._fetch_release_login(email, password, deviceId, that);
+                //that.fetch_fade_login(email, password, deviceId, that);
+                that.fetch_release_login(email, password, deviceId, that);
             }, function () {
                 AlertIOS.alert('设置', '无法获取设备唯一标识');
             });
