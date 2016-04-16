@@ -7,6 +7,7 @@ var React = require('react-native');
 var Util = require('./util');
 var ItemBlock = require('./home/itemblock');
 var Service = require('./service')
+var RESTFulService = require('./rest')
 
 var {
     Text,
@@ -33,13 +34,16 @@ var Home = React.createClass({
         //减去paddingLeft && paddingRight && space
         var width = Math.floor(Util.size.width);
         var keyWord = null;
-        console.log(this.props.requestUrl);
+        var fadeUrl = Service.host + Service.getComic;
+        var releaseUrl = RESTFulService.host + RESTFulService.welcome.index;
         if (this.props.keyWord != undefined) {
             keyWord = this.props.keyWord;
         }
         return {
             page: 0,
-            requestUrl: this.props.requestUrl == undefined ? Service.host + Service.getComic : this.props.requestUrl,
+            pageMap: "",
+            requestUrl: this.props.requestUrl == undefined ? fadeUrl : this.props.requestUrl,
+            //requestUrl: this.props.requestUrl == undefined ? releaseUrl : this.props.requestUrl,
             canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh, //可以刷新
             canLoadNext: this.props.canLoadNext == undefined ? true : this.props.canLoadNext, //可以载入下一页
             canFilter: this.props.canFilter == undefined ? false : this.props.canFilter,//可以过滤
@@ -153,6 +157,7 @@ var Home = React.createClass({
     clearData: function () {
         this.setState({
             page: 0,
+            pageMap: '',
             items: undefined,
             dataSource: this.state.dataSource.cloneWithRows([]),
         });
@@ -174,8 +179,22 @@ var Home = React.createClass({
         if (keyWord == null || keyWord == undefined) {
             keyWord = "";
         }
+        var _mode = "debug";
+        var _auth = "debug";
+        //假数据模式下
+        this._fetch_fade_data(page, keyWord);
+        //release模式下
+        //this._fetch_release_data(keyWord, _mode, _auth)
+    },
+
+    /**
+     * 假数据
+     * @param page
+     * @param keyWord
+     * @private
+     */
+    _fetch_fade_data: function (page, keyWord) {
         var that = this;
-        //TODO:之后去掉
         AsyncStorage.getItem('token', function (err, token) {
             if (!err) {
                 var data = {
@@ -213,6 +232,66 @@ var Home = React.createClass({
             }
         });
     },
+
+    /**
+     * 真数据
+     * @param pageMap pageMap
+     * @param keyWord 关键词
+     * @param _mode 解密模式
+     * @param _auth 认证模式
+     * @private
+     */
+    _fetch_release_data: function (pageMap, keyWord, _mode, _auth) {
+        var that = this;
+        AsyncStorage.getItem('token', function (err, token) {
+            if (!err) {
+                var params = {
+                    data: {
+                        token: token,
+                        pageMap: this.state.pageMap,
+                    },
+                    _auth: _auth,
+                    _mode: _mode
+                };
+                var fetchOptions = {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(params)
+                };
+                var items = that.state.items;
+                if (items == undefined) {
+                    items = [];
+                }
+                fetch(that.state.requestUrl, fetchOptions)
+                    .then((response) => response.json())
+                    .then((responseText) => {
+                        //创建ListView
+                        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+                        var pageMap = responseText.pageMap;
+                        var dataList = responseText.comic;
+                        var success = responseText.success;
+                        var errorMsg = responseText.errorMsg
+                        if (success) {
+                            that.setState({
+                                pageMap: pageMap,
+                                items: items.concat(dataList),
+                                dataSource: ds.cloneWithRows(items.concat(dataList)),
+                                loadNext: false
+                            });
+                        } else {
+                            AlertIOS.alert('网络错误', errorMsg);
+                        }
+
+                    }).done();
+            } else {
+                console.log("尚未登录");
+            }
+        });
+    },
+
 
     /**
      * 载入页
