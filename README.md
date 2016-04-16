@@ -23,4 +23,4 @@ This app has 3 modules
 - [ ] 专题,漫画列表按照顶部状态栏展示 Hard
 - [ ] JS端AES解密
 - [ ] Android Support Hard
-- [ ] 重构混乱代码 Normal
+- [ ] 重构混乱代码 No
