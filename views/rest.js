@@ -32,5 +32,5 @@ var RESTFulService = {
         special_content: '/mine/special/content',
         history: "history"
     }
-}
+};
 module.exports = RESTFulService;
