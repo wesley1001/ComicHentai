@@ -140,28 +140,6 @@ var User = React.createClass({
 
 
     /**
-     * 注册操作
-     * @private
-     */
-    _register: function () {
-        var email = this.state.email;
-        var nickname = this.state.nickname;
-        var password = this.state.password;
-        var that = this;
-        this.renderLoadingView(that);
-        AdSupportIOS.getAdvertisingTrackingEnabled(function () {
-            AdSupportIOS.getAdvertisingId(function (deviceId) {
-                this._fetch_fade_register(email, nickname, password, deviceId, that);
-                //this._fetch_release_register(email, nickname, password, deviceId, that);
-            }, function () {
-                AlertIOS.alert('设置', '无法获取设备唯一标识');
-            });
-        }, function () {
-            AlertIOS.alert('设置', '无法获取设备唯一标识，请关闭设置->隐私->广告->限制广告跟踪');
-        });
-    },
-
-    /**
      * 进行数据传输时展示加载界面
      * @param that
      */
@@ -225,6 +203,7 @@ var User = React.createClass({
             showRegister: showRegister,
         });
     },
+
     /**
      * 假数据注册
      * @param email
@@ -234,7 +213,7 @@ var User = React.createClass({
      * @param that
      * @private
      */
-    _fetch_fade_register: function (email, nickname, password, deviceId, that) {
+    fetch_fade_register: function (email, nickname, password, deviceId, that) {
         var path = Service.host + Service.register;
         Util.post(path, {
             email: email,
@@ -252,11 +231,11 @@ var User = React.createClass({
                     ['email', user.email],
                 ], function (err) {
                     if (!err) {
-                        this.afterSuccessUserService(that, '注册成功!正在跳转');
+                        that.afterSuccessUserService(that, '注册成功!正在跳转');
                     }
                 });
             } else {
-                this.afterFailureUserService(that, '注册失败,请稍后重试', 'register');
+                that.afterFailureUserService(that, '注册失败,请稍后重试', 'register');
             }
         });
     },
@@ -269,7 +248,7 @@ var User = React.createClass({
      * @param that
      * @private
      */
-    _fetch_release_register: function (email, nickname, password, deviceId, that) {
+    fetch_release_register: function (email, nickname, password, deviceId, that) {
         var path = RESTFulService.host + RESTFulService.user.signUp;
         Util.post(path, {
             userInfo: {
@@ -288,14 +267,99 @@ var User = React.createClass({
                     ['deviceId', deviceId],
                 ], function (err) {
                     if (!err) {
-                        this.afterSuccessUserService(that, '注册成功!正在跳转');
+                        that.afterSuccessUserService(that, '注册成功!正在跳转');
                     }
                 });
             } else {
-                this.afterFailureUserService(that, '注册失败,请稍后重试', 'register');
+                that.afterFailureUserService(that, '注册失败,请稍后重试', 'register');
             }
         });
 
+    },
+
+    /**
+     * 假数据登录
+     * @private
+     */
+    fetch_fade_login: function (email, password, deviceId, that) {
+        var path = Service.host + Service.login;
+        Util.post(path, {
+            email: email,
+            password: password,
+            deviceId: deviceId,
+        }, function (data) {
+            if (data.status) {
+                var user = data.data;
+                //加入数据到本地
+                AsyncStorage.multiSet([
+                    ['username', user.username],
+                    ['token', user.token],
+                    ['userid', user.userid],
+                    ['email', user.email],
+                ], function (err) {
+                    if (!err) {
+                        that.afterSuccessUserService(that, '认证成功');
+                    }
+                });
+
+            } else {
+                that.afterFailureUserService(that, '用户名或者密码错误', 'login');
+            }
+        });
+
+    },
+    /**
+     * 真数据登录
+     * @param email
+     * @param password
+     * @param deviceId
+     * @param that
+     * @private
+     */
+    fetch_release_login: function (email, password, deviceId, that) {
+        var path = RESTFulService.host + RESTFulService.user.signIn;
+        Util.post(path, {
+            username: email,
+            password: password,
+            deviceId: deviceId,
+        }, function (data) {
+            if (data.status) {
+                //加入数据到本地
+                AsyncStorage.multiSet([
+                    ['token', data.token],
+                    ['deviceId', deviceId],
+                ], function (err) {
+                    if (!err) {
+                        that.afterSuccessUserService(that, '认证成功');
+                    }
+                });
+
+            } else {
+                that.afterFailureUserService(that, '用户名或者密码错误', 'login');
+            }
+        });
+    },
+
+    /**
+     * 注册操作
+     * @private
+     */
+    _register: function () {
+        var email = this.state.email;
+        var nickname = this.state.nickname;
+        var password = this.state.password;
+        var that = this;
+        this.renderLoadingView(that);
+        AdSupportIOS.getAdvertisingTrackingEnabled(function () {
+            AdSupportIOS.getAdvertisingId(function (deviceId) {
+                that.fetch_fade_register(email, nickname, password, deviceId, that);
+                //this._fetch_release_register(email, nickname, password, deviceId, that);
+            }, function () {
+                AlertIOS.alert('设置', '无法获取设备唯一标识');
+            });
+        }, function () {
+            AlertIOS.alert('设置', '无法获取设备唯一标识，请关闭设置->隐私->广告->限制广告跟踪');
+        });
     },
 
     /**
@@ -318,7 +382,7 @@ var User = React.createClass({
         });
         AdSupportIOS.getAdvertisingTrackingEnabled(function () {
             AdSupportIOS.getAdvertisingId(function (deviceId) {
-                this._fetch_fade_login(email, password, deviceId, that);
+                that.fetch_fade_login(email, password, deviceId, that);
                 //this._fetch_release_login(email, password, deviceId, that);
             }, function () {
                 AlertIOS.alert('设置', '无法获取设备唯一标识');
@@ -328,60 +392,6 @@ var User = React.createClass({
         });
     },
 
-    /**
-     * 假数据登录
-     * @private
-     */
-    _fetch_fade_login: function (email, password, deviceId, that) {
-        var path = Service.host + Service.login;
-        Util.post(path, {
-            email: email,
-            password: password,
-            deviceId: deviceId,
-        }, function (data) {
-            if (data.status) {
-                var user = data.data;
-                //加入数据到本地
-                AsyncStorage.multiSet([
-                    ['username', user.username],
-                    ['token', user.token],
-                    ['userid', user.userid],
-                    ['email', user.email],
-                ], function (err) {
-                    if (!err) {
-                        this.afterSuccessUserService(that, '认证成功');
-                    }
-                });
-
-            } else {
-                this.afterFailureUserService(that, '用户名或者密码错误', 'login');
-            }
-        });
-
-    },
-    _fetch_release_login: function (email, password, deviceId, that) {
-        var path = RESTFulService.host + RESTFulService.user.signIn;
-        Util.post(path, {
-            username: email,
-            password: password,
-            deviceId: deviceId,
-        }, function (data) {
-            if (data.status) {
-                //加入数据到本地
-                AsyncStorage.multiSet([
-                    ['token', data.token],
-                    ['deviceId', deviceId],
-                ], function (err) {
-                    if (!err) {
-                        this.afterSuccessUserService(that, '认证成功');
-                    }
-                });
-
-            } else {
-                this.afterFailureUserService(that, '用户名或者密码错误', 'login');
-            }
-        });
-    },
 
     renderUserInfo: function () {
         var colors = ['#F4000B', '#17B4FF', '#FFD900', '#F00000', '#66CCFF'];
