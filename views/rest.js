@@ -25,7 +25,10 @@ var RESTFulService = {
     },
     classification: {
         index: "/classification/index",
-        details: "/classification/details"
+        comic: {
+            detail: "/classification/comic/detail"
+        },
+        detail: "/classification/detail"
     },
     mine: {
         index: "/mine/index",

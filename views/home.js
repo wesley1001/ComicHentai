@@ -42,6 +42,7 @@ var Home = React.createClass({
         return {
             page: 0,
             pageMap: "",
+            otherParam: this.props.otherParam == undefined ? null : this.props.otherParam,
             //requestUrl: this.props.requestUrl == undefined ? fadeUrl : this.props.requestUrl,
             requestUrl: this.props.requestUrl == undefined ? releaseUrl : this.props.requestUrl,
             canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh, //可以刷新
@@ -179,7 +180,7 @@ var Home = React.createClass({
         if (keyWord == null || keyWord == undefined) {
             keyWord = "";
         }
-        this._fetch_release_data(pageMap, keyWord)
+        this._fetch_release_data(pageMap, keyWord, this.state.otherParam)
     },
 
     /**
@@ -236,7 +237,7 @@ var Home = React.createClass({
      * @param _auth 认证模式
      * @private
      */
-    _fetch_release_data: function (pageMap, keyWord) {
+    _fetch_release_data: function (pageMap, keyWord, otherParam) {
         var that = this;
         AsyncStorage.getItem('token', function (err, token) {
             if (!err) {
@@ -251,9 +252,14 @@ var Home = React.createClass({
                 if (items == undefined) {
                     items = [];
                 }
-                var path = that.state.requestUrl + "?data=" + encodeURIComponent(Util.encrypt(JSON.stringify({
-                        pageMap: pageMap == undefined ? "" : pageMap,
-                    })));
+                var param = {
+                    pageMap: pageMap == undefined ? "" : pageMap,
+                };
+                if (otherParam != undefined && otherParam != null && otherParam != "") {
+                    param = Util.extend(param, otherParam);
+                }
+                var path = that.state.requestUrl + "?data=" + encodeURIComponent(Util.encrypt(JSON.stringify(param)));
+                console.log(path);
                 fetch(path, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
@@ -261,7 +267,12 @@ var Home = React.createClass({
                         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
                         var pageMap = responseText.data.pageMap;
                         var isEnd = responseText.data.isEnd;
-                        var dataList = responseText.data.data;
+                        var dataList = [];
+                        if (path.indexOf("/welcome/index") != -1) {
+                            dataList = responseText.data.data;
+                        } else {
+                            dataList = responseText.data.data.relation.comicList;
+                        }
                         var success = responseText.success;
                         var errorMsg = responseText.errorMsg;
                         if (success) {

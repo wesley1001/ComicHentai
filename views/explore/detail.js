@@ -3,6 +3,7 @@ var Util = require('../util');
 var ActionSheetIOS = require('ActionSheetIOS');
 var Service = require('./../service');
 var Home = require('./../home')
+var RESTFulService = require('./../rest')
 var {
     View,
     Text,
@@ -24,7 +25,10 @@ var Detail = React.createClass({
         return (<View style={{flex: 1,backgroundColor:'#fff', borderTopWidth:1, borderTopColor:'#ddd'}}>
             <Home
                 navigator={this.props.navigator}
-                items={this.props.data}
+                requestUrl={RESTFulService.host+RESTFulService.classification.comic.detail}
+                otherParam={{
+                    classified:{id:this.props.id}
+                }}
                 canRefresh={false}
                 canLoadNext={false}
                 canFilter={true}
@@ -63,7 +67,7 @@ var styles = StyleSheet.create({
         color: '#575656',
         marginTop: 8,
         fontSize: 12,
-    },search: {
+    }, search: {
         height: 35,
         borderWidth: Util.pixel,
         borderColor: '#ccc',

@@ -171,7 +171,6 @@ var Explore = React.createClass({
                 var path = that.state.requestUrl + "?data=" + encodeURIComponent(Util.encrypt(JSON.stringify({
                         pageMap: pageMap == undefined ? "" : pageMap,
                     })));
-                console.log(path);
                 fetch(path, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
@@ -342,7 +341,6 @@ var Explore = React.createClass({
      * @returns {XML}
      */
     renderRow: function (rowData) {
-        console.log(rowData);
         var itemList = [];
         var colors = ['#E20079', '#FFD602', '#25BFFE', '#F90000', '#04E246', '#04E246', '#00AFC9'];
         for (var index = 0; index < rowData.length; index++) {
