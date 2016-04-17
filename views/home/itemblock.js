@@ -1,6 +1,6 @@
 var React = require('react-native');
 var Detail = require('./detail');
-var Service = require('./../service');
+var RESTFulService = require('./../rest')
 var Util = require('../util');
 
 var {
@@ -32,7 +32,6 @@ var ItemBlock = React.createClass({
         var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear() + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
 
 
-
         //i中的每个元素都是一个专题的具体信息,一个专题内部会有多个漫画
         return (
             <TouchableOpacity onPress={this._loadPage.bind(this,comic.id)}>
@@ -59,19 +58,18 @@ var ItemBlock = React.createClass({
     //加载页面
     _loadPage: function (data) {
         var nav = this.props.nav;
-        var key = Util.key;
-        var path = Service.host + Service.getComic;
         var comicId = data;
-        Util.post(path, {
-            key: key,
-            comicId: comicId
-        }, function (resp) {
+        var param = encodeURIComponent(Util.encrypt(JSON.stringify({
+            comic: {id: comicId}
+        })));
+        var path = RESTFulService.host + RESTFulService.comic.index + "?data=" + param;
+        Util._get(path, function (resp) {
             nav.push({
                 title: "漫画详情",
                 component: Detail,
                 passProps: {
                     comicId: comicId,
-                    comicData: resp.data
+                    comicData: resp.data.category.relation.comic
                 }
             });
         }.bind(this));

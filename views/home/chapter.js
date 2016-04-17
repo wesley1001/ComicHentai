@@ -107,7 +107,8 @@ var Chapter = React.createClass({
         setTimeout(() => {
             // prepend 10 items
             this.clearData();
-            this.fetchData(0, this.state.keyWord);
+            //this.fetchData(0, this.state.keyWord);
+            this.fetchData();
             this.setState({
                 isRefreshing: false,
             });
@@ -135,12 +136,27 @@ var Chapter = React.createClass({
         });
     },
 
+    fetchData: function () {
+        if (this.props.items != undefined && !this.state.canLoadNext) {
+            return;
+        }
+        var content = this.state.items[0];
+        console.log(content);
+        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+        this.setState({
+            items: (content),
+            dataSource: ds.cloneWithRows(content),
+            loadNext: false,
+            canLoadNext: false
+        });
+    },
+
     /**
      * 远端读取数据
      * @param page
      * @param keyWord
      */
-    fetchData: function (page, keyWord) {
+    fetchData_netWork: function (page, keyWord) {
         //如果初始化有数据,同时禁用翻页,那就直接展示了
         if (this.props.items != undefined && !this.state.canLoadNext) {
             return;
@@ -244,12 +260,14 @@ var Chapter = React.createClass({
         var orientation = this.state.orientation;
         if (orientation == 'PORTRAIT' || orientation == "UNKNOWN" || orientation == undefined) {
             return ( <Image
+                resizeMode={Image.resizeMode.stretch}
                 style={[styles.img]}
                 source={{uri: rowData}}
             />);
         }
         else if (orientation == 'LANDSCAPE') {
             return ( <Image
+                resizeMode={Image.resizeMode.stretch}
                 style={[styles.img_land_scape]}
                 source={{uri: rowData}}
             />);
@@ -357,7 +375,7 @@ var styles = StyleSheet.create({
     },
     img: {
         width: Util.size.width,
-        height: Util.size.height
+        height: Util.size.height,
     },
     img_land_scape: {
         width: Math.floor(Util.size.height),

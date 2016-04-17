@@ -27,13 +27,17 @@ var Detail = React.createClass({
      * @private
      */
     _startRead: function (comicId, chapterId) {
+        var passProps = {
+            comicId: comicId,
+            chapterId: chapterId,
+            items: JSON.parse(this.props.comicData.contentTitle)
+        };
+        console.log(passProps);
         this.props.navigator.push({
             title: "章节",
             component: Chapter,
-            passProps: {
-                comicId: comicId,
-                chapterId: chapterId
-            }
+            passProps: passProps,
+            canRefresh: false
         });
     },
     /**
@@ -45,42 +49,53 @@ var Detail = React.createClass({
     },
 
     render: function () {
-        var chapters = this.state.chapters;
         var comic = this.props.comicData;
-        var rank = ['E', 'D', 'C', 'B', 'A', 'S'];
-        var comicTitle = comic.comicTitle;
+        var comicTitle = comic.title;
         if (comicTitle.length > 40) {
             if (comicTitle.contains("]")) {
                 comicTitle = comicTitle.split("]")[1].split("[")[0]
             }
             comicTitle = comicTitle.substring(1, 40) + (comicTitle.length > 39 ? "..." : "");
         }
+        var timestamp = comic.updated;
+        var date = new Date(timestamp * 1000);
+        var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear() + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
+
+        var status = comic.status;
+        if (status == 0) {
+            status = "已完结"
+        } else if (status == 1) {
+            status = "未更新"
+        }
         return (
             <ScrollView style={styles.container}>
                 <View key={'comic' + this.props.key} style={styles.row}>
                     <Image
                         style={[styles.img]}
-                        source={{uri: comic.comicCover}}
+                        source={{uri: comic.coverTitle}}
                     />
                     <View>
                         <Text style={styles.noColor}>
                             {"名称:" + comicTitle}
                         </Text>
                         <Text style={styles.unColor}>
-                            {"最新更新时间:" + comic.comicDate}
+                            {"作者:" + comic.author}
                         </Text>
                         <Text style={styles.unColor}>
-                            {"平均评分:" + rank[comic.comicRank]}
+                            {"最新更新时间:" + formattedDate}
+                        </Text>
+                        <Text style={styles.unColor}>
+                            {"漫画状态:" + status}
                         </Text>
                     </View>
                 </View>
                 <View key={'chapter' + this.props.key} style={[styles.row,{marginTop:5,flex:1}]}>
                     <TouchableOpacity underlayColor="#fff" style={styles.btn}
-                                      onPress={this._startRead.bind(this,comic.comicId,0)}>
+                                      onPress={this._startRead.bind(this,comic.id,0)}>
                         <Text style={{color:'#fff'}}>开始阅读</Text>
                     </TouchableOpacity>
                     <TouchableHighlight underlayColor="#fff" style={styles.btn}
-                                        onPress={this._favorite(this,comic.comicId)}>
+                                        onPress={this._favorite(this,comic.id)}>
                         <Text style={{color:'#fff'}}>收藏漫画</Text>
                     </TouchableHighlight>
                 </View>
@@ -93,7 +108,7 @@ var Detail = React.createClass({
                             {"漫画类别:" + comic.comicCategory}
                         </Text>
                         <Text style={[styles.unColor,{marginLeft:5}]}>
-                            {"漫画描述:" + comic.comicTitle}
+                            {"漫画描述:" + comic.introduction}
                         </Text>
                     </View>
                 </ScrollView>
