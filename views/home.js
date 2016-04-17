@@ -260,7 +260,7 @@ var Home = React.createClass({
                         //创建ListView
                         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
                         var pageMap = responseText.data.pageMap;
-                        console.log(pageMap);
+                        var isEnd = responseText.data.isEnd;
                         var dataList = responseText.data.data;
                         var success = responseText.success;
                         var errorMsg = responseText.errorMsg;
@@ -269,7 +269,8 @@ var Home = React.createClass({
                                 pageMap: pageMap,
                                 items: items.concat(dataList),
                                 dataSource: ds.cloneWithRows(items.concat(dataList)),
-                                loadNext: false
+                                loadNext: false,
+                                canLoadNext: !isEnd
                             });
                         } else {
                             AlertIOS.alert('网络错误', errorMsg);
