@@ -55,8 +55,7 @@ var Util = {
             .done();
     },
     //get请求
-    _get: function (url, data, callback) {
-
+    _get: function (url, callback) {
         var fetchOptions = {
             headers: {
                 'Accept': 'application/json',
@@ -65,10 +64,10 @@ var Util = {
         };
 
         fetch(url, fetchOptions)
-            .then((response) => response.text())
+            .then((response) => response.json())
             .then((responseText) => {
-                callback(JSON.parse(responseText));
-            });
+                callback(responseText);
+            }).done();
     },
     encode: function (obj) {
         var parts = [];

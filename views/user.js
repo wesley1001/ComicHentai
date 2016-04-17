@@ -322,28 +322,30 @@ var User = React.createClass({
      * @private
      */
     fetch_release_login: function (email, password, deviceId, that) {
-        var path = RESTFulService.host + RESTFulService.user.signIn;
-        var param = {
-            data: Util.encode(JSON.stringify({
+        var path = RESTFulService.host + RESTFulService.user.login;
+        path = path + "?data=" + encodeURIComponent(Util.encrypt(JSON.stringify({
                 userInfo: {
                     username: email,
                     password: password
                 },
                 deviceId: deviceId
-            }))
-        };
-        Util.post(path, param, function (data) {
-            if (data.status) {
+            })));
+        console.log(path);
+        Util._get(path, function (response) {
+            console.log("response");
+            console.log(response);
+            console.log("success" + response.success);
+            console.log("token" + response.token);
+            if (response.success) {
                 //加入数据到本地
                 AsyncStorage.multiSet([
-                    ['token', data.token],
+                    ['token', response.data.token],
                     ['deviceId', deviceId],
                 ], function (err) {
                     if (!err) {
                         that.afterSuccessUserService(that, '认证成功');
                     }
                 });
-
             } else {
                 that.afterFailureUserService(that, '用户名或者密码错误', 'login');
             }
