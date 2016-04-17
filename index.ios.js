@@ -68,9 +68,6 @@ var ComicHentai = React.createClass({
             title: "漫画绅士",
             rightButtonIcon: require('image!31'),
             onRightButtonPress: this._toSearchComic,
-            passProps: {
-                requestUrl: Service.host + Service.getComic
-            }
         }
         return (<NavigatorIOS
             ref={"comic_nav"}

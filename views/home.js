@@ -42,8 +42,8 @@ var Home = React.createClass({
         return {
             page: 0,
             pageMap: "",
-            requestUrl: this.props.requestUrl == undefined ? fadeUrl : this.props.requestUrl,
-            //requestUrl: this.props.requestUrl == undefined ? releaseUrl : this.props.requestUrl,
+            //requestUrl: this.props.requestUrl == undefined ? fadeUrl : this.props.requestUrl,
+            requestUrl: this.props.requestUrl == undefined ? releaseUrl : this.props.requestUrl,
             canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh, //可以刷新
             canLoadNext: this.props.canLoadNext == undefined ? true : this.props.canLoadNext, //可以载入下一页
             canFilter: this.props.canFilter == undefined ? false : this.props.canFilter,//可以过滤
@@ -63,12 +63,12 @@ var Home = React.createClass({
      */
     componentWillMount: function () {
         this.setState({keyWord: this.props.keyWord});
-        this.fetchData(0, this.state.keyWord);
+        this.fetchData(0, this.state.pageMap, this.state.keyWord);
     },
 
     componentWillUnmount: function () {
-        console.log("unmount");
         this.setState({
+            pageMap: "",
             requestUrl: Service.host + Service.getComic,
             canRefresh: true, //可以刷新
             canLoadNext: true, //可以载入下一页
@@ -97,7 +97,7 @@ var Home = React.createClass({
         setTimeout(() => {
             // prepend 10 items
             this.clearData();
-            this.fetchData(0, this.state.keyWord);
+            this.fetchData(0, this.state.pageMap, this.state.keyWord);
             this.setState({
                 isRefreshing: false,
             });
@@ -168,7 +168,7 @@ var Home = React.createClass({
      * @param page
      * @param keyWord
      */
-    fetchData: function (page, keyWord) {
+    fetchData: function (page, pageMap, keyWord) {
         //如果初始化有数据,同时禁用翻页,那就直接展示了
         if (this.props.items != undefined && !this.state.canLoadNext) {
             return;
@@ -179,12 +179,7 @@ var Home = React.createClass({
         if (keyWord == null || keyWord == undefined) {
             keyWord = "";
         }
-        var _mode = "debug";
-        var _auth = "debug";
-        //假数据模式下
-        this._fetch_fade_data(page, keyWord);
-        //release模式下
-        //this._fetch_release_data(keyWord, _mode, _auth)
+        this._fetch_release_data(pageMap, keyWord)
     },
 
     /**
@@ -241,37 +236,32 @@ var Home = React.createClass({
      * @param _auth 认证模式
      * @private
      */
-    _fetch_release_data: function (pageMap, keyWord, _mode, _auth) {
+    _fetch_release_data: function (pageMap, keyWord) {
         var that = this;
         AsyncStorage.getItem('token', function (err, token) {
             if (!err) {
-                var params = {
-                    data: {
-                        token: token,
-                        pageMap: this.state.pageMap,
-                    },
-                    _auth: _auth,
-                    _mode: _mode
-                };
                 var fetchOptions = {
                     method: 'GET',
                     headers: {
                         'Accept': 'application/json',
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify(params)
+                    }
                 };
                 var items = that.state.items;
                 if (items == undefined) {
                     items = [];
                 }
-                fetch(that.state.requestUrl, fetchOptions)
+                var path = that.state.requestUrl + "?data=" + encodeURIComponent(Util.encrypt(JSON.stringify({
+                        pageMap: pageMap == undefined ? "" : pageMap,
+                    })));
+                fetch(path, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
                         //创建ListView
                         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-                        var pageMap = responseText.pageMap;
-                        var dataList = responseText.comic;
+                        var pageMap = responseText.data.pageMap;
+                        console.log(pageMap);
+                        var dataList = responseText.data.data;
                         var success = responseText.success;
                         var errorMsg = responseText.errorMsg;
                         if (success) {
@@ -347,7 +337,7 @@ var Home = React.createClass({
      */
     renderRow: function (rowData) {
         return (<ItemBlock
-            key={rowData.comicId}
+            key={rowData.id}
             comic={rowData}
             width={this.state.width}
             nav={this.props.navigator}
@@ -415,7 +405,7 @@ var Home = React.createClass({
             isLoadingTail: false
         });
         this._onLoadNext();
-        this.fetchData(this.state.page, this.state.keyWord);
+        this.fetchData(this.state.page, this.state.pageMap, this.state.keyWord);
     },
 
     /**
