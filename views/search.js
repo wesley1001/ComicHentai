@@ -7,7 +7,7 @@ var Util = require('./util');
 var Service = require('./service');
 var Home = require('./home');
 var Explore = require('./explore');
-
+var RESTFulService = require('./rest')
 var {
     View,
     Text,
@@ -19,8 +19,8 @@ var {
     TouchableOpacity,
     } = React;
 
-var REQUEST_COMIC_URL = Service.host + Service.searchComic;
-var REQUEST_SPECAIL_URL = Service.host + Service.searchSpecial;
+var REQUEST_COMIC_URL = RESTFulService.host + RESTFulService.search.result;
+var REQUEST_SPECAIL_URL = RESTFulService.host + RESTFulService.search.result;
 var PAGE = 0;
 var Search = React.createClass({
 

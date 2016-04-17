@@ -254,12 +254,13 @@ var Home = React.createClass({
                 }
                 var param = {
                     pageMap: pageMap == undefined ? "" : pageMap,
+                    keyWord: keyWord
                 };
                 if (otherParam != undefined && otherParam != null && otherParam != "") {
                     param = Util.extend(param, otherParam);
                 }
                 var path = that.state.requestUrl + "?data=" + encodeURIComponent(Util.encrypt(JSON.stringify(param)));
-                console.log(path);
+                console.log("请求路径为" + path);
                 fetch(path, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
@@ -268,7 +269,7 @@ var Home = React.createClass({
                         var pageMap = responseText.data.pageMap;
                         var isEnd = responseText.data.isEnd;
                         var dataList = [];
-                        if (path.indexOf("/welcome/index") != -1) {
+                        if (path.indexOf("/welcome/index") != -1 || path.indexOf("/search/result") != -1) {
                             dataList = responseText.data.data;
                         } else {
                             dataList = responseText.data.data.relation.comicList;

@@ -63,7 +63,7 @@ var Explore = React.createClass({
     componentWillMount: function () {
         this.setState({keyWord: this.props.keyWord});
         //this.fetchData(0, this.state.keyWord);
-        this.fetchData(this.state.pageMap, this.state.keyWord);
+        this.fetchData(this.state.pageMap, this.state.keyWord, this.state.otherParam);
     },
 
 
@@ -79,7 +79,7 @@ var Explore = React.createClass({
         setTimeout(() => {
             // prepend 10 items
             this.clearData();
-            this.fetchData(this.state.pageMap, this.state.keyWord);
+            this.fetchData(this.state.pageMap, this.state.keyWord, this.state.otherParam);
             this.setState({
                 isRefreshing: false,
             });
@@ -146,7 +146,7 @@ var Explore = React.createClass({
     },
 
 
-    fetchData: function (pageMap, keyWord) {
+    fetchData: function (pageMap, keyWord, otherParam) {
         //如果初始化有数据,同时禁用翻页,那就直接展示了
         if (this.props.items != undefined && !this.state.canLoadNext) {
             return;
@@ -168,9 +168,14 @@ var Explore = React.createClass({
                 if (items == undefined) {
                     items = [];
                 }
-                var path = that.state.requestUrl + "?data=" + encodeURIComponent(Util.encrypt(JSON.stringify({
-                        pageMap: pageMap == undefined ? "" : pageMap,
-                    })));
+                var param = {
+                    pageMap: pageMap == undefined ? "" : pageMap,
+                    keyWord: keyWord
+                };
+                if (otherParam != undefined && otherParam != null && otherParam != "") {
+                    param = Util.extend(param, otherParam);
+                }
+                var path = that.state.requestUrl + "?data=" + encodeURIComponent(Util.encrypt(JSON.stringify(param)));
                 fetch(path, fetchOptions)
                     .then((response) => response.json())
                     .then((responseText) => {
@@ -422,7 +427,7 @@ var Explore = React.createClass({
             isLoadingTail: false
         });
         this._onLoadNext();
-        this.fetchData(this.state.pageMap, this.state.keyWord);
+        this.fetchData(this.state.pageMap, this.state.keyWord, this.state.otherParam);
     },
 
     /**
