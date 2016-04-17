@@ -330,12 +330,7 @@ var User = React.createClass({
                 },
                 deviceId: deviceId
             })));
-        console.log(path);
         Util._get(path, function (response) {
-            console.log("response");
-            console.log(response);
-            console.log("success" + response.success);
-            console.log("token" + response.token);
             if (response.success) {
                 //加入数据到本地
                 AsyncStorage.multiSet([
