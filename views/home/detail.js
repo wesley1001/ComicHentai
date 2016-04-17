@@ -1,6 +1,7 @@
 var React = require('react-native');
 var Util = require('../util');
 var Chapter = require("./chapter")
+var RESTFulService = require('./../rest')
 var {
     View,
     Text,
@@ -45,6 +46,33 @@ var Detail = React.createClass({
      * @private
      */
     _favorite: function (comicId) {
+        var that = this;
+        AsyncStorage.getItem('token', function (err, token) {
+            if (!err && token) {
+                var path = RESTFulService.host + RESTFulService.comic;
+                var param = {
+                    data: Util.encrypt(JSON.stringify({
+                        token: token,
+                        deviceId: token,
+                        comic: {
+                            id: comicId
+                        }
+                    }))
+                }
+                Util.post_json(path, param, function (data) {
+                    console.log("响应信息为");
+                    console.log(data);
+                    if (data.success) {
+                        AlertIOS.alert("收藏", "收藏成功")
+                    } else {
+                        AlertIOS.alert("收藏", "收藏失败")
+                    }
+                })
+            } else {
+                AlertIOS.alert("用户信息", "您尚未登录")
+            }
+
+        });
 
     },
 

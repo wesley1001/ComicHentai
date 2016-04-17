@@ -8,7 +8,8 @@
 var React = require('react-native');
 var Util = require('./util');
 var Item = require('./explore/item');
-var Service = require('./service')
+var Service = require('./service');
+var RESTFulService = require('./rest')
 var {
     Text,
     View ,
@@ -35,12 +36,14 @@ var Explore = React.createClass({
     getInitialState: function () {
         //减去paddingLeft && paddingRight && space
         var width = Math.floor(((Util.size.width - 40)) / 3);
+        var releaseUrl = RESTFulService.host + RESTFulService.classification.index;
         var keyWord = null;
         if (this.props.requestUrl != undefined) {
-            REQUEST_SPECIAL_URL = this.props.requestUrl;
             keyWord = this.props.keyWord;
         }
         return {
+            pageMap: "",
+            requestUrl: this.props.requestUrl == undefined ? releaseUrl : this.props.requestUrl,
             canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh, //可以刷新
             canLoadNext: this.props.canLoadNext == undefined ? true : this.props.canLoadNext, //可以载入下一页
             canFilter: this.props.canFilter == undefined ? false : this.props.canFilter,//可以过滤
@@ -59,7 +62,8 @@ var Explore = React.createClass({
      */
     componentWillMount: function () {
         this.setState({keyWord: this.props.keyWord});
-        this.fetchData(0, this.state.keyWord);
+        //this.fetchData(0, this.state.keyWord);
+        this.fetchData(this.state.pageMap, this.state.keyWord);
     },
 
 
@@ -71,12 +75,11 @@ var Explore = React.createClass({
         if (!this.state.canRefresh) {
             return;
         }
-        PAGE = 0;
-        this.setState({isRefreshing: true});
+        this.setState({page: 0, pageMap: "", isRefreshing: true});
         setTimeout(() => {
             // prepend 10 items
             this.clearData();
-            this.fetchData(0, this.state.keyWord);
+            this.fetchData(this.state.pageMap, this.state.keyWord);
             this.setState({
                 isRefreshing: false,
             });
@@ -134,10 +137,84 @@ var Explore = React.createClass({
      * 清空当前数据
      */
     clearData: function () {
-        PAGE = 0;
         this.setState({
+            page: 0,
+            pageMap: '',
             items: undefined,
             dataSource: this.state.dataSource.cloneWithRows([]),
+        });
+    },
+
+
+    fetchData: function (pageMap, keyWord) {
+        //如果初始化有数据,同时禁用翻页,那就直接展示了
+        if (this.props.items != undefined && !this.state.canLoadNext) {
+            return;
+        }
+        if (keyWord == null || keyWord == undefined) {
+            keyWord = "";
+        }
+        var that = this;
+        AsyncStorage.getItem('token', function (err, token) {
+            if (!err) {
+                var fetchOptions = {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                };
+                var items = that.state.items;
+                if (items == undefined) {
+                    items = [];
+                }
+                var path = that.state.requestUrl + "?data=" + encodeURIComponent(Util.encrypt(JSON.stringify({
+                        pageMap: pageMap == undefined ? "" : pageMap,
+                    })));
+                console.log(path);
+                fetch(path, fetchOptions)
+                    .then((response) => response.json())
+                    .then((responseText) => {
+                        //创建ListView
+                        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+                        var pageMap = responseText.data.pageMap;
+                        var isEnd = responseText.data.isEnd;
+                        var dataList = responseText.data.data;
+                        var success = responseText.success;
+                        var errorMsg = responseText.errorMsg;
+
+
+                        var data = items.concat(dataList);
+                        var rowCount = (data.length / 3) + 1;
+                        var totalData = [];
+                        for (var i = 0; i < rowCount; i++) {
+                            var rowData = [];
+                            for (var j = 0; j < 3; j++) {
+                                var index = i * 3 + j;
+                                if (index >= data.length) {
+                                    break;
+                                }
+                                rowData.push(data[index]);
+                            }
+                            totalData.push(rowData);
+                        }
+
+                        if (success) {
+                            that.setState({
+                                pageMap: pageMap,
+                                items: items.concat(dataList),
+                                dataSource: ds.cloneWithRows(totalData),
+                                loadNext: false,
+                                canLoadNext: !isEnd
+                            });
+                        } else {
+                            AlertIOS.alert('网络错误', errorMsg);
+                        }
+
+                    }).done();
+            } else {
+                console.log("尚未登录");
+            }
         });
     },
 
@@ -146,7 +223,7 @@ var Explore = React.createClass({
      * @param page
      * @param keyWord
      */
-    fetchData: function (page, keyWord) {
+    fetchData_fade: function (page, keyWord) {
         //如果初始化有数据,同时禁用翻页,那就直接展示了
         if (this.props.items != undefined && !this.state.canLoadNext) {
             return;
@@ -176,7 +253,7 @@ var Explore = React.createClass({
                     body: JSON.stringify(data)
                 };
                 var items = that.state.items;
-                if(items == undefined){
+                if (items == undefined) {
                     items = [];
                 }
                 fetch(REQUEST_SPECIAL_URL, fetchOptions)
@@ -265,6 +342,7 @@ var Explore = React.createClass({
      * @returns {XML}
      */
     renderRow: function (rowData) {
+        console.log(rowData);
         var itemList = [];
         var colors = ['#E20079', '#FFD602', '#25BFFE', '#F90000', '#04E246', '#04E246', '#00AFC9'];
         for (var index = 0; index < rowData.length; index++) {
@@ -273,7 +351,7 @@ var Explore = React.createClass({
                     key={rowData[index].id}
                     id={rowData[index].id}
                     title={rowData[index].title}
-                    coverImage={rowData[index].coverImage}
+                    coverImage={rowData[index].coverTitle}
                     width={this.state.width}
                     color={colors[index].color}
                     nav={this.props.navigator}
@@ -346,8 +424,7 @@ var Explore = React.createClass({
             isLoadingTail: false
         });
         this._onLoadNext();
-        PAGE += 1;
-        this.fetchData(PAGE, this.state.keyWord);
+        this.fetchData(this.state.pageMap, this.state.keyWord);
     },
 
     /**

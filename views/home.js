@@ -93,7 +93,7 @@ var Home = React.createClass({
         if (!this.state.canRefresh) {
             return;
         }
-        this.setState({page: 0, isRefreshing: true});
+        this.setState({page: 0, pageMap: "", isRefreshing: true});
         setTimeout(() => {
             // prepend 10 items
             this.clearData();
