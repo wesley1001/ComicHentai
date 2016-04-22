@@ -10,6 +10,9 @@ var {
     ScrollView,
     TouchableHighlight,
     TouchableOpacity,
+    AsyncStorage,
+    AdSupportIOS,
+    AlertIOS
     } = React;
 
 var number = Math.floor(Util.size.width - 20);
@@ -46,34 +49,14 @@ var Detail = React.createClass({
      * @private
      */
     _favorite: function (comicId) {
-        var that = this;
-        AsyncStorage.getItem('token', function (err, token) {
-            if (!err && token) {
-                var path = RESTFulService.host + RESTFulService.comic;
-                var param = {
-                    data: Util.encrypt(JSON.stringify({
-                        token: token,
-                        deviceId: token,
-                        comic: {
-                            id: comicId
-                        }
-                    }))
-                }
-                Util.post_json(path, param, function (data) {
-                    console.log("响应信息为");
-                    console.log(data);
-                    if (data.success) {
-                        AlertIOS.alert("收藏", "收藏成功")
-                    } else {
-                        AlertIOS.alert("收藏", "收藏失败")
-                    }
-                })
-            } else {
-                AlertIOS.alert("用户信息", "您尚未登录")
-            }
-
-        });
-
+        console.log(comicId);
+        AlertIOS.alert("收藏", "收藏功能暂不可用");
+        /*var that = this; AdSupportIOS.getAdvertisingTrackingEnabled(function () { AdSupportIOS.getAdvertisingId(function (deviceId) {
+         AsyncStorage.getItem('token', function (err, token) { if (!err && token) { var path = RESTFulService.host + RESTFulService.comic;
+         var param = { data: Util.encrypt(JSON.stringify({ token: token, deviceId: deviceId, comic: { id: comicId } })) }
+         Util.post_json(path, param, function (data) { console.log("响应信息为"); console.log(data); if (data.success) { AlertIOS.alert("收藏", "收藏成功") }
+         else { AlertIOS.alert("收藏", "收藏失败") } }) } else { } }); },
+         function () { AlertIOS.alert('设置', '无法获取设备唯一标识，请关闭设置->隐私->广告->限制广告跟踪'); }) });*/
     },
 
     render: function () {
@@ -123,7 +106,7 @@ var Detail = React.createClass({
                         <Text style={{color:'#fff'}}>开始阅读</Text>
                     </TouchableOpacity>
                     <TouchableHighlight underlayColor="#fff" style={styles.btn}
-                                        onPress={this._favorite(this,comic.id)}>
+                                        onPress={this._favorite.bind(this,comic.id)}>
                         <Text style={{color:'#fff'}}>收藏漫画</Text>
                     </TouchableHighlight>
                 </View>
