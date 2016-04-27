@@ -41,7 +41,6 @@ var Detail = React.createClass({
             title: "章节",
             component: Chapter,
             passProps: passProps,
-            canRefresh: false
         });
     },
     /**
@@ -63,7 +62,7 @@ var Detail = React.createClass({
         var comic = this.props.comicData;
         var comicTitle = comic.title;
         if (comicTitle.length > 40) {
-            if (comicTitle.contains("]")) {
+            if (comicTitle.indexOf("]") != -1) {
                 comicTitle = comicTitle.split("]")[1].split("[")[0]
             }
             comicTitle = comicTitle.substring(1, 40) + (comicTitle.length > 39 ? "..." : "");

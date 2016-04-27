@@ -22,7 +22,7 @@ var ItemBlock = React.createClass({
         var comic = this.props.comic;
         var comicTitle = comic.title;
         if (comicTitle.length > 40) {
-            if (comicTitle.contains("]")) {
+            if (comicTitle.indexOf("]") != -1) {
                 comicTitle = comicTitle.split("]")[1].split("[")[0]
             }
             comicTitle = comicTitle.substring(1, 40) + (comicTitle.length > 39 ? "..." : "");

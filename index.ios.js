@@ -14,12 +14,12 @@ var {
     TabBarIOS,
     NavigatorIOS,
     AppRegistry,
-    StatusBarIOS,
+    StatusBar,
     } = React;
 
 
 var navigator = null;
-StatusBarIOS.setStyle('light-content');
+StatusBar.setBarStyle('light-content');
 var ComicHentai = React.createClass({
     statics: {
         title: '主页',

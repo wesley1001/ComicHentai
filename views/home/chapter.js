@@ -109,9 +109,6 @@ var Chapter = React.createClass({
             this.clearData();
             //this.fetchData(0, this.state.keyWord);
             this.fetchData();
-            this.setState({
-                isRefreshing: false,
-            });
         }, 1000);
     },
 
@@ -137,17 +134,16 @@ var Chapter = React.createClass({
     },
 
     fetchData: function () {
-        if (this.props.items != undefined && !this.state.canLoadNext) {
-            return;
-        }
-        var content = this.state.items[0];
+
+        var content = this.props.items[0];
         console.log(content);
         var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
         this.setState({
             items: (content),
             dataSource: ds.cloneWithRows(content),
             loadNext: false,
-            canLoadNext: false
+            canLoadNext: false,
+            isRefreshing: false
         });
     },
 
@@ -158,7 +154,8 @@ var Chapter = React.createClass({
      */
     fetchData_netWork: function (page, keyWord) {
         //如果初始化有数据,同时禁用翻页,那就直接展示了
-        if (this.props.items != undefined && !this.state.canLoadNext) {
+        var isLoadable = !(this.props.items != undefined && !this.state.canLoadNext);
+        if (!isLoadable) {
             return;
         }
         if (page == null || page == undefined) {
