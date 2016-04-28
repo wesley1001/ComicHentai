@@ -1,6 +1,6 @@
 var React = require('react-native');
 var Detail = require('./detail');
-var Service = require('./../service');
+var RESTFulService = require('./../rest')
 var Util = require('../util');
 
 var {
@@ -20,32 +20,35 @@ var ItemBlock = React.createClass({
         };
         var rank = ['E', 'D', 'C', 'B', 'A', 'S']
         var comic = this.props.comic;
-        var comicTitle = comic.comicTitle;
+        var comicTitle = comic.title;
         if (comicTitle.length > 40) {
-            if (comicTitle.contains("]")) {
+            if (comicTitle.indexOf("]") != -1) {
                 comicTitle = comicTitle.split("]")[1].split("[")[0]
             }
             comicTitle = comicTitle.substring(1, 40) + (comicTitle.length > 39 ? "..." : "");
         }
+        var timestamp = comic.updated;
+        var date = new Date(timestamp * 1000);
+        var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear() + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
 
 
         //i中的每个元素都是一个专题的具体信息,一个专题内部会有多个漫画
         return (
-            <TouchableOpacity onPress={this._loadPage.bind(this,comic.comicId)}>
+            <TouchableOpacity onPress={this._loadPage.bind(this,comic.id)}>
                 <View key={'comic' + this.props.key} style={styles.row}>
                     <Image
                         style={[styles.text]}
-                        source={{uri: comic.comicCover}}
+                        source={{uri: comic.coverTitle}}
                     />
                     <View>
                         <Text style={styles.noColor}>
                             {comicTitle}
                         </Text>
                         <Text style={styles.unColor}>
-                            {"最新更新时间:" + comic.comicDate}
+                            {"作者:" + comic.author}
                         </Text>
                         <Text style={styles.unColor}>
-                            {"平均评分:" + rank[comic.comicRank]}
+                            {"最近更新时间:" + formattedDate}
                         </Text>
                     </View>
                 </View>
@@ -55,19 +58,18 @@ var ItemBlock = React.createClass({
     //加载页面
     _loadPage: function (data) {
         var nav = this.props.nav;
-        var key = Util.key;
-        var path = Service.host + Service.getComic;
         var comicId = data;
-        Util.post(path, {
-            key: key,
-            comicId: comicId
-        }, function (resp) {
+        var param = encodeURIComponent(Util.encrypt(JSON.stringify({
+            comic: {id: comicId}
+        })));
+        var path = RESTFulService.host + RESTFulService.comic.index + "?data=" + param;
+        Util._get(path, function (resp) {
             nav.push({
                 title: "漫画详情",
                 component: Detail,
                 passProps: {
                     comicId: comicId,
-                    comicData: resp.data
+                    comicData: resp.data.category.relation.comic
                 }
             });
         }.bind(this));

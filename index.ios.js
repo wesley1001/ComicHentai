@@ -14,12 +14,12 @@ var {
     TabBarIOS,
     NavigatorIOS,
     AppRegistry,
-    StatusBarIOS,
+    StatusBar,
     } = React;
 
 
 var navigator = null;
-StatusBarIOS.setStyle('light-content');
+StatusBar.setBarStyle('light-content');
 var ComicHentai = React.createClass({
     statics: {
         title: '主页',
@@ -41,10 +41,10 @@ var ComicHentai = React.createClass({
     },
 
     _toSearchComic: function () {
-        if (this.refs.nav == undefined) {
+        if (this.refs.comic_nav == undefined) {
             return;
         }
-        this.refs.nav.push({
+        this.refs.comic_nav.push({
             component: Search,
             title: '搜索页',
             passProps: {type: "comic"}
@@ -52,10 +52,10 @@ var ComicHentai = React.createClass({
     },
 
     _toSearchSpecial: function () {
-        if (this.refs.nav == undefined) {
+        if (this.refs.explore_nav == undefined) {
             return;
         }
-        this.refs.nav.push({
+        this.refs.explore_nav.push({
             component: Search,
             title: '搜索页',
             passProps: {type: "special"}
@@ -68,12 +68,9 @@ var ComicHentai = React.createClass({
             title: "漫画绅士",
             rightButtonIcon: require('image!31'),
             onRightButtonPress: this._toSearchComic,
-            passProps: {
-                requestUrl: Service.host + Service.getComic
-            }
         }
         return (<NavigatorIOS
-            ref={"nav"}
+            ref={"comic_nav"}
             style={{flex:1}}
             barTintColor='#007AFF'
             titleTextColor="#fff"
@@ -91,7 +88,7 @@ var ComicHentai = React.createClass({
             onRightButtonPress: this._toSearchSpecial
         }
         return (<NavigatorIOS
-            ref={"nav"}
+            ref={"explore_nav"}
             style={{flex:1}}
             barTintColor='#007AFF'
             titleTextColor="#fff"

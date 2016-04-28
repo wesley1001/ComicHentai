@@ -7,6 +7,7 @@ var React = require('react-native');
 var Util = require('./util');
 var ItemBlock = require('./home/itemblock');
 var Service = require('./service')
+var RESTFulService = require('./rest')
 
 var {
     Text,
@@ -33,13 +34,17 @@ var Home = React.createClass({
         //减去paddingLeft && paddingRight && space
         var width = Math.floor(Util.size.width);
         var keyWord = null;
-        console.log(this.props.requestUrl);
+        var fadeUrl = Service.host + Service.getComic;
+        var releaseUrl = RESTFulService.host + RESTFulService.welcome.index;
         if (this.props.keyWord != undefined) {
             keyWord = this.props.keyWord;
         }
         return {
             page: 0,
-            requestUrl: this.props.requestUrl == undefined ? Service.host + Service.getComic : this.props.requestUrl,
+            pageMap: "",
+            otherParam: this.props.otherParam == undefined ? null : this.props.otherParam,
+            //requestUrl: this.props.requestUrl == undefined ? fadeUrl : this.props.requestUrl,
+            requestUrl: this.props.requestUrl == undefined ? releaseUrl : this.props.requestUrl,
             canRefresh: this.props.canRefresh == undefined ? true : this.props.canRefresh, //可以刷新
             canLoadNext: this.props.canLoadNext == undefined ? true : this.props.canLoadNext, //可以载入下一页
             canFilter: this.props.canFilter == undefined ? false : this.props.canFilter,//可以过滤
@@ -59,12 +64,12 @@ var Home = React.createClass({
      */
     componentWillMount: function () {
         this.setState({keyWord: this.props.keyWord});
-        this.fetchData(0, this.state.keyWord);
+        this.fetchData(0, this.state.pageMap, this.state.keyWord);
     },
 
     componentWillUnmount: function () {
-        console.log("unmount");
         this.setState({
+            pageMap: "",
             requestUrl: Service.host + Service.getComic,
             canRefresh: true, //可以刷新
             canLoadNext: true, //可以载入下一页
@@ -89,11 +94,11 @@ var Home = React.createClass({
         if (!this.state.canRefresh) {
             return;
         }
-        this.setState({page: 0, isRefreshing: true});
+        this.setState({page: 0, pageMap: "", isRefreshing: true});
         setTimeout(() => {
             // prepend 10 items
             this.clearData();
-            this.fetchData(0, this.state.keyWord);
+            this.fetchData(0, this.state.pageMap, this.state.keyWord);
             this.setState({
                 isRefreshing: false,
             });
@@ -153,6 +158,7 @@ var Home = React.createClass({
     clearData: function () {
         this.setState({
             page: 0,
+            pageMap: '',
             items: undefined,
             dataSource: this.state.dataSource.cloneWithRows([]),
         });
@@ -163,7 +169,7 @@ var Home = React.createClass({
      * @param page
      * @param keyWord
      */
-    fetchData: function (page, keyWord) {
+    fetchData: function (page, pageMap, keyWord) {
         //如果初始化有数据,同时禁用翻页,那就直接展示了
         if (this.props.items != undefined && !this.state.canLoadNext) {
             return;
@@ -174,8 +180,17 @@ var Home = React.createClass({
         if (keyWord == null || keyWord == undefined) {
             keyWord = "";
         }
+        this._fetch_release_data(pageMap, keyWord, this.state.otherParam)
+    },
+
+    /**
+     * 假数据
+     * @param page
+     * @param keyWord
+     * @private
+     */
+    _fetch_fade_data: function (page, keyWord) {
         var that = this;
-        //TODO:之后去掉
         AsyncStorage.getItem('token', function (err, token) {
             if (!err) {
                 var data = {
@@ -213,6 +228,73 @@ var Home = React.createClass({
             }
         });
     },
+
+    /**
+     * 真数据
+     * @param pageMap pageMap
+     * @param keyWord 关键词
+     * @param _mode 解密模式
+     * @param _auth 认证模式
+     * @private
+     */
+    _fetch_release_data: function (pageMap, keyWord, otherParam) {
+        var that = this;
+        AsyncStorage.getItem('token', function (err, token) {
+            if (!err) {
+                var fetchOptions = {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                };
+                var items = that.state.items;
+                if (items == undefined) {
+                    items = [];
+                }
+                var param = {
+                    pageMap: pageMap == undefined ? "" : pageMap,
+                    keyWord: keyWord
+                };
+                if (otherParam != undefined && otherParam != null && otherParam != "") {
+                    param = Util.extend(param, otherParam);
+                }
+                var path = that.state.requestUrl + "?data=" + encodeURIComponent(Util.encrypt(JSON.stringify(param)));
+                console.log("请求路径为" + path);
+                fetch(path, fetchOptions)
+                    .then((response) => response.json())
+                    .then((responseText) => {
+                        //创建ListView
+                        var ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
+                        var pageMap = responseText.data.pageMap;
+                        var isEnd = responseText.data.isEnd;
+                        var dataList = [];
+                        if (path.indexOf("/welcome/index") != -1 || path.indexOf("/search/result") != -1) {
+                            dataList = responseText.data.data;
+                        } else {
+                            dataList = responseText.data.data.relation.comicList;
+                        }
+                        var success = responseText.success;
+                        var errorMsg = responseText.errorMsg;
+                        if (success) {
+                            that.setState({
+                                pageMap: pageMap,
+                                items: items.concat(dataList),
+                                dataSource: ds.cloneWithRows(items.concat(dataList)),
+                                loadNext: false,
+                                canLoadNext: !isEnd
+                            });
+                        } else {
+                            AlertIOS.alert('网络错误', errorMsg);
+                        }
+
+                    }).done();
+            } else {
+                console.log("尚未登录");
+            }
+        });
+    },
+
 
     /**
      * 载入页
@@ -268,7 +350,7 @@ var Home = React.createClass({
      */
     renderRow: function (rowData) {
         return (<ItemBlock
-            key={rowData.comicId}
+            key={rowData.id}
             comic={rowData}
             width={this.state.width}
             nav={this.props.navigator}
@@ -336,7 +418,7 @@ var Home = React.createClass({
             isLoadingTail: false
         });
         this._onLoadNext();
-        this.fetchData(this.state.page, this.state.keyWord);
+        this.fetchData(this.state.page, this.state.pageMap, this.state.keyWord);
     },
 
     /**

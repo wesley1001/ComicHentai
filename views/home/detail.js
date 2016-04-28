@@ -1,6 +1,7 @@
 var React = require('react-native');
 var Util = require('../util');
 var Chapter = require("./chapter")
+var RESTFulService = require('./../rest')
 var {
     View,
     Text,
@@ -9,6 +10,9 @@ var {
     ScrollView,
     TouchableHighlight,
     TouchableOpacity,
+    AsyncStorage,
+    AdSupportIOS,
+    AlertIOS
     } = React;
 
 var number = Math.floor(Util.size.width - 20);
@@ -27,13 +31,16 @@ var Detail = React.createClass({
      * @private
      */
     _startRead: function (comicId, chapterId) {
+        var passProps = {
+            comicId: comicId,
+            chapterId: chapterId,
+            items: JSON.parse(this.props.comicData.contentTitle)
+        };
+        console.log(passProps);
         this.props.navigator.push({
             title: "章节",
             component: Chapter,
-            passProps: {
-                comicId: comicId,
-                chapterId: chapterId
-            }
+            passProps: passProps,
         });
     },
     /**
@@ -41,46 +48,64 @@ var Detail = React.createClass({
      * @private
      */
     _favorite: function (comicId) {
-
+        console.log(comicId);
+        AlertIOS.alert("收藏", "收藏功能暂不可用");
+        /*var that = this; AdSupportIOS.getAdvertisingTrackingEnabled(function () { AdSupportIOS.getAdvertisingId(function (deviceId) {
+         AsyncStorage.getItem('token', function (err, token) { if (!err && token) { var path = RESTFulService.host + RESTFulService.comic;
+         var param = { data: Util.encrypt(JSON.stringify({ token: token, deviceId: deviceId, comic: { id: comicId } })) }
+         Util.post_json(path, param, function (data) { console.log("响应信息为"); console.log(data); if (data.success) { AlertIOS.alert("收藏", "收藏成功") }
+         else { AlertIOS.alert("收藏", "收藏失败") } }) } else { } }); },
+         function () { AlertIOS.alert('设置', '无法获取设备唯一标识，请关闭设置->隐私->广告->限制广告跟踪'); }) });*/
     },
 
     render: function () {
-        var chapters = this.state.chapters;
         var comic = this.props.comicData;
-        var rank = ['E', 'D', 'C', 'B', 'A', 'S'];
-        var comicTitle = comic.comicTitle;
+        var comicTitle = comic.title;
         if (comicTitle.length > 40) {
-            if (comicTitle.contains("]")) {
+            if (comicTitle.indexOf("]") != -1) {
                 comicTitle = comicTitle.split("]")[1].split("[")[0]
             }
             comicTitle = comicTitle.substring(1, 40) + (comicTitle.length > 39 ? "..." : "");
+        }
+        var timestamp = comic.updated;
+        var date = new Date(timestamp * 1000);
+        var formattedDate = ('0' + date.getDate()).slice(-2) + '/' + ('0' + (date.getMonth() + 1)).slice(-2) + '/' + date.getFullYear() + ' ' + ('0' + date.getHours()).slice(-2) + ':' + ('0' + date.getMinutes()).slice(-2);
+
+        var status = comic.status;
+        if (status == 0) {
+            status = "已完结"
+        } else if (status == 1) {
+            status = "未更新"
         }
         return (
             <ScrollView style={styles.container}>
                 <View key={'comic' + this.props.key} style={styles.row}>
                     <Image
                         style={[styles.img]}
-                        source={{uri: comic.comicCover}}
+                        source={{uri: comic.coverTitle}}
                     />
                     <View>
                         <Text style={styles.noColor}>
                             {"名称:" + comicTitle}
                         </Text>
                         <Text style={styles.unColor}>
-                            {"最新更新时间:" + comic.comicDate}
+                            {"作者:" + comic.author}
                         </Text>
                         <Text style={styles.unColor}>
-                            {"平均评分:" + rank[comic.comicRank]}
+                            {"最新更新时间:" + formattedDate}
+                        </Text>
+                        <Text style={styles.unColor}>
+                            {"漫画状态:" + status}
                         </Text>
                     </View>
                 </View>
                 <View key={'chapter' + this.props.key} style={[styles.row,{marginTop:5,flex:1}]}>
                     <TouchableOpacity underlayColor="#fff" style={styles.btn}
-                                      onPress={this._startRead.bind(this,comic.comicId,0)}>
+                                      onPress={this._startRead.bind(this,comic.id,0)}>
                         <Text style={{color:'#fff'}}>开始阅读</Text>
                     </TouchableOpacity>
                     <TouchableHighlight underlayColor="#fff" style={styles.btn}
-                                        onPress={this._favorite(this,comic.comicId)}>
+                                        onPress={this._favorite.bind(this,comic.id)}>
                         <Text style={{color:'#fff'}}>收藏漫画</Text>
                     </TouchableHighlight>
                 </View>
@@ -93,7 +118,7 @@ var Detail = React.createClass({
                             {"漫画类别:" + comic.comicCategory}
                         </Text>
                         <Text style={[styles.unColor,{marginLeft:5}]}>
-                            {"漫画描述:" + comic.comicTitle}
+                            {"漫画描述:" + comic.introduction}
                         </Text>
                     </View>
                 </ScrollView>

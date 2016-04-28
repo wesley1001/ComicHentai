@@ -2,7 +2,7 @@ var React = require('react-native');
 var Detail = require('./detail');
 var Service = require('./../service');
 var Util = require('../util');
-
+var RESTFulService = require('./../rest')
 var {
     View,
     Text,
@@ -38,24 +38,14 @@ var Item = React.createClass({
     //加载页面
     _loadPage: function (e) {
         var nav = this.props.nav;
-        var key = Util.key;
-        var title = this.props.title;
         var id = this.props.id;
-        var path = Service.host + Service.getSpecial;
-        //跳转到Detail页
-        Util.post(path, {
-            key: key,
-            title: title,
-            id: id
-        }, function (response) {
-            nav.push({
-                title: title,
-                component: Detail,
-                passProps: {
-                    data: response.data
-                }
-            });
-        }.bind(this));
+        nav.push({
+            title: "专题信息",
+            component: Detail,
+            passProps: {
+                id: id
+            }
+        });
 
     }
 });
